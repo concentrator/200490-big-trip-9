@@ -13,7 +13,7 @@ const sortItemParams = {
 const createSortItemTemplate = ({id, isSortable, isChecked}) => {
   const label = makeFirstLetterUppercase(id);
   if (!isSortable) {
-    return `<span class="trip-sort__item trip-sort__item--${id}">${label}</span>`
+    return `<span class="trip-sort__item trip-sort__item--${id}">${label}</span>`;
   } else {
     return `
     <div class="trip-sort__item trip-sort__item--${id}">
