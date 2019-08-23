@@ -23,10 +23,12 @@ export const createButton = (type, classList, title) => {
 };
 
 export const renderItems = (container, place, createTemplate, defaultParams, data) => {
+
   data.forEach((item) => {
     let params = {};
+    const defaultClone = Object.assign({}, defaultParams);
     if (typeof item === `object`) {
-      params = {...defaultParams, ...item};
+      params = Object.assign(defaultClone, item);
     }
     render(container, place, createTemplate, params);
   });

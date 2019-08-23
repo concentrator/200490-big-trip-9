@@ -123,7 +123,7 @@ const getEvent = () => ({
       isSelected: getRandomBoolean()
     }
   ]).slice(0, Math.floor(Math.random() * 3)),
-  isFavorite: getRandomBoolean(),
+  isFavorite: getRandomBoolean()
 });
 
 const getEventList = (count) => Array.from(new Array(count), () => getEvent());

@@ -16,11 +16,37 @@ const getMinMaxDates = (events) => {
 };
 
 const getTripCost = (events) => {
-  const offersCost = events.filter((event) => event.offers.length).map((event) => {
-    return event.offers.map((offer) => offer.isSelected ? offer.price : 0).reduce((total, current) => total + current);
+  const offersCostTotal = events.map((event) => {
+    let eventOffersCost = 0;
+    if (event.offers.length) {
+      eventOffersCost = event.offers.map((offer) => offer.isSelected ? offer.price : 0).reduce((total, current) => total + current);
+    }
+    return eventOffersCost;
   }).reduce((total, current) => total + current);
 
-  return offersCost + events.map((event) => event.price).reduce((total, current) => total + current);
+  const eventsCostTotal = events.map((event) => event.price).reduce((total, current) => total + current);
+
+  return offersCostTotal + eventsCostTotal;
+};
+
+const getTripDays = (days, eventsList) => {
+  const tripDays = days.map((day) => {
+    let dayEvents = [];
+    for (let event of eventsList) {
+      if (new Date(event.dateStart).toDateString() === new Date(day).toDateString()) {
+        dayEvents.push(event);
+      } else {
+        eventsList = eventsList.slice(dayEvents.length);
+        break;
+      }
+    }
+    return {
+      number: days.indexOf(day) + 1,
+      date: day,
+      events: dayEvents
+    };
+  });
+  return tripDays;
 };
 
 export const makeTrip = (events) => {
@@ -46,23 +72,7 @@ export const makeTrip = (events) => {
   const destinations = eventsList.map((event) => event.destination);
   const tripCost = getTripCost(eventsList);
 
-  const tripDays = days.map((day) => {
-    let dayEvents = [];
-    for (let event of eventsList) {
-      if (new Date(event.dateStart).toDateString() === new Date(day).toDateString()) {
-        dayEvents.push(event);
-      } else {
-        eventsList = eventsList.slice(dayEvents.length);
-        break;
-      }
-    }
-    return {
-      number: days.indexOf(day) + 1,
-      date: day,
-      events: dayEvents
-    };
-
-  });
+  const tripDays = getTripDays(days, eventsList);
 
   return {
     info: {

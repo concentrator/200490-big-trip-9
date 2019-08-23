@@ -25,9 +25,6 @@ const tripEvents = document.querySelector(`.trip-events`);
 const tripSort = renderSort(data.SortItems);
 tripEvents.appendChild(tripSort);
 
-
 const tripDays = renderTripDayList(trip.days, 4, true);
 
 tripEvents.appendChild(tripDays);
-
-

@@ -8,4 +8,3 @@ export const makeTripDay = ({number, date}) => {
       <time class="day__date" datetime="${new Date(date).toISOString()}">${formatDateShort(date)}</time>
     </div>`;
 };
-
