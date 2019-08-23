@@ -1,61 +1,45 @@
 import {convertDateToTime} from '../utils';
 import {getDateTimeDelta} from '../utils';
+import {makeFirstLetterUppercase} from '../utils';
+import {getPreposition} from '../utils';
 
-const EVENT_ICON_MAP = {
-  taxi: `img/icons/taxi.png`,
-  bus: ``,
-  train: ``,
-  ship: ``,
-  transport: ``,
-  drive: `img/icons/drive.png`,
-  flight: `img/icons/flight.png`,
-  check: ``,
-  sightseeing: ``,
-  restaurant: ``
+const getEventIcon = (type) => {
+  return `img/icons/${type}.png`;
 };
 
-const createEventOfferTemplate = ({title, price}) => {
+const getEventTitle = (destination, type) => {
+  return `${makeFirstLetterUppercase(type)} ${getPreposition(type)} ${destination}`;
+};
+
+const makeEventOffersList = (offers) => {
   return `
-  <li class="event__offer">
-    <span class="event__offer-title">${title}</span>
-    &plus;
-    &euro;&nbsp;<span class="event__offer-price">${price}</span>
-  </li>`;
+  <h4 class="visually-hidden">Offers:</h4>
+  <ul class="event__selected-offers">
+    ${offers.filter((it) => it.isSelected).map((offer) => `
+    <li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;
+      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+    </li>`).join(``)}
+  </ul>`;
 };
 
-const createEventOffersList = (offers) => {
-  let list = ``;
-  offers.forEach((item) => {
-    list += createEventOfferTemplate(item);
-  });
-  return `<h4 class="visually-hidden">Offers:</h4>\n<ul class="event__selected-offers">${list}\n</ul>`;
-};
-
-// const eventParams = {
-//   type: ``,
-//   title: ``,
-//   startTime: ``,
-//   endTime: ``,
-//   price: 0,
-//   offers: []
-// };
-
-export const createEventTemplate = ({type, title, startTime, endTime, price, offers}) => {
-  const offersList = offers.length ? createEventOffersList(offers) : ``;
-  const duration = getDateTimeDelta(startTime, endTime);
+export const makeEvent = ({destination, type, dateStart, dateEnd, price, offers}) => {
+  const offersList = offers.length ? makeEventOffersList(offers) : ``;
+  const duration = getDateTimeDelta(dateStart, dateEnd);
   return `
   <li class="trip-events__item">
     <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="${EVENT_ICON_MAP[type]}" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="${getEventIcon(type)}" alt="Event type icon">
       </div>
-      <h3 class="event__title">${title}</h3>
+      <h3 class="event__title">${getEventTitle(destination, type)}</h3>
 
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${startTime}">${convertDateToTime(startTime)}</time>
+          <time class="event__start-time" datetime="${new Date(dateStart).toISOString()}">${convertDateToTime(dateStart)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${endTime}">${convertDateToTime(endTime)}</time>
+          <time class="event__end-time" datetime="${new Date(dateEnd).toISOString()}">${convertDateToTime(dateEnd)}</time>
         </p>
         <p class="event__duration">${duration.hours}H ${duration.minutes}M</p>
       </div>

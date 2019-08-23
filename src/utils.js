@@ -37,15 +37,24 @@ export const makeFirstLetterUppercase = (str) => {
   return result;
 };
 
+export const getPreposition = (type) => {
+  return ([`sightseeing`, `restaurant`, `check-in`].some((it) => it === type)) ? `in` : `to`;
+};
+
 export const convertDateToTime = (date) => {
   const dateOptions = {hour: `2-digit`, minute: `2-digit`, hour12: false};
   const dateObj = new Date(date);
   return dateObj.toLocaleTimeString(`en-US`, dateOptions);
 };
 
-export const getDateTimeDelta = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+export const formatDateShort = (date) => {
+  const dateOptions = {month: `short`, day: `numeric`};
+  return new Date(date).toLocaleDateString(`en-US`, dateOptions);
+};
+
+export const getDateTimeDelta = (dateStart, dateEnd) => {
+  const start = new Date(dateStart);
+  const end = new Date(dateEnd);
   let delta = new Date(end - start);
   delta = parseInt((delta) / 1000, 10);
   const hours = Math.floor(delta / 3600);

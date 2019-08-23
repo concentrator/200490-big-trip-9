@@ -42,73 +42,6 @@ const SortItems = [
   }
 ];
 
-const TripDays = [
-  {
-    number: 1,
-    date: `2019-03-18`,
-    events: [
-      {
-        id: 0,
-        type: `taxi`,
-        title: `Taxi to airport`,
-        startTime: `2019-03-18T10:30`,
-        endTime: `2019-03-18T11:00`,
-        price: 20,
-        offers: [
-          {
-            title: `Order Uber`,
-            price: 20
-          }
-        ]
-      },
-      {
-        id: 1,
-        type: `flight`,
-        title: `Flight to Geneva`,
-        startTime: `2019-03-18T12:25`,
-        endTime: `2019-03-18T13:35`,
-        price: 160,
-        offers: [
-          {
-            title: `Add luggage`,
-            price: 50
-          },
-          {
-            title: `Switch to comfort`,
-            price: 80
-          }
-        ]
-      },
-      {
-        id: 2,
-        type: `drive`,
-        title: `Drive to Chamonix`,
-        startTime: `2019-03-18T14:30`,
-        endTime: `2019-03-18T16:05`,
-        price: 160,
-        offers: [
-          {
-            title: `Rent a car`,
-            price: 200
-          }
-        ]
-      }
-    ]
-  },
-  // {
-  //   number: 2,
-  //   date: `2019-03-19`
-  // },
-  // {
-  //   number: 3,
-  //   date: `2019-03-20`
-  // }
-];
-
-// const EventsList = [
-
-// ];
-
 const getRandomBoolean = () => Boolean(Math.round(Math.random()));
 
 const shuffleArray = (a) => {
@@ -145,16 +78,21 @@ const getEvent = () => ({
     `transport`,
     `drive`,
     `flight`,
-    `check`,
+    `check-in`,
     `sightseeing`,
     `restaurant`
   ][Math.floor(Math.random() * 10)],
   destination: [
-    `Amsterdam`,
-    `Geneva`,
-    `Chamonix`,
-    `Saint Petersburg`
-  ][Math.floor(Math.random() * 3)],
+    `Simferopol`,
+    `Sevastopol`,
+    `Yalta`,
+    `Simeiz`
+  ][Math.floor(Math.random() * 4)],
+  dateStart: Math.round(((Date.now() + Math.floor(Math.random() * 7 * 24 * 60) * 60 * 1000) / (60 * 1000)) / 5) * 60 * 1000 * 5,
+  get dateEnd() {
+    return Math.round(((this.dateStart + 10 * 60 * 1000 + Math.floor(Math.random() * 5 * 60) * 60 * 1000) / (60 * 1000)) / 5) * 60 * 1000 * 5;
+  },
+  price: Math.ceil(Math.random() * 10) * 20,
   photos: [
     `http://picsum.photos/300/150?r=${Math.random()}`,
     `http://picsum.photos/300/150?r=${Math.random()}`,
@@ -163,41 +101,40 @@ const getEvent = () => ({
     `http://picsum.photos/300/150?r=${Math.random()}`
   ],
   description: getRandomDescription(),
-  price: Math.ceil(Math.random() * 10) * 20,
   offers: shuffleArray([
     {
       title: `Add luggage`,
       price: 10,
-      isChecked: getRandomBoolean()
+      isSelected: getRandomBoolean()
     },
     {
       title: `Switch to comfort class`,
       price: 150,
-      isChecked: getRandomBoolean()
+      isSelected: getRandomBoolean()
     },
     {
       title: `Add meal`,
       price: 2,
-      isChecked: getRandomBoolean()
+      isSelected: getRandomBoolean()
     },
     {
       title: `Choose seats`,
       price: 9,
-      isChecked: getRandomBoolean()
+      isSelected: getRandomBoolean()
     }
-  ]).slice(0, Math.floor(Math.random() * 3))
+  ]).slice(0, Math.floor(Math.random() * 3)),
+  isFavorite: getRandomBoolean(),
 });
 
-const event = getEvent();
+const getEventList = (count) => Array.from(new Array(count), () => getEvent());
 
-console.log(event);
+const eventList = getEventList(4);
 
 const data = {
   MenuItems,
   FilterItems,
   SortItems,
-  TripDays,
-  // EventsList
+  eventList
 };
 
 export default data;
