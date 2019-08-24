@@ -7,11 +7,11 @@ import {makeEventEdit} from './event-edit';
 const tripDaysContainer = createElement(`ul`, `trip-days`);
 
 const getMinMaxDates = (events) => {
-  const startDates = events.map((event) => new Date(new Date(event.dateStart).toDateString()));
-  const endDates = events.map((event) => new Date(new Date(event.dateEnd).toDateString()));
+  const startDates = events.map((event) => Date.parse(new Date(event.dateStart).toDateString()));
+  const endDates = events.map((event) => Date.parse(new Date(event.dateEnd).toDateString()));
   return {
-    min: Math.min.call(null, ...startDates),
-    max: Math.max.call(null, ...endDates)
+    min: Math.min(...startDates),
+    max: Math.max(...endDates)
   };
 };
 
@@ -62,7 +62,7 @@ export const makeTrip = (events) => {
   let eventsList = events.slice();
 
   days.sort((a, b) => {
-    return new Date(a) - new Date(b);
+    return a - b;
   });
 
   eventsList.sort((a, b) => {
@@ -70,6 +70,7 @@ export const makeTrip = (events) => {
   });
 
   const destinations = eventsList.map((event) => event.destination);
+
   const tripCost = getTripCost(eventsList);
 
   const tripDays = getTripDays(days, eventsList);

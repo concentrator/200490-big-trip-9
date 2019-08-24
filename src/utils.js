@@ -55,9 +55,7 @@ export const formatDateShort = (date) => {
 };
 
 export const getDateTimeDelta = (dateStart, dateEnd) => {
-  const start = new Date(dateStart);
-  const end = new Date(dateEnd);
-  let delta = new Date(end - start);
+  let delta = dateEnd - dateStart;
   delta = parseInt((delta) / 1000, 10);
   const hours = Math.floor(delta / 3600);
   const minutes = (!hours) ? Math.round(delta / 60) : Math.round((delta - hours * 3600) / 60);
