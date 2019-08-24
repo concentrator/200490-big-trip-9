@@ -3,10 +3,6 @@ import {getDateTimeDelta} from '../utils';
 import {makeFirstLetterUppercase} from '../utils';
 import {getPreposition} from '../utils';
 
-const getEventIcon = (type) => {
-  return `img/icons/${type}.png`;
-};
-
 const getEventTitle = (destination, type) => {
   return `${makeFirstLetterUppercase(type)} ${getPreposition(type)} ${destination}`;
 };
@@ -31,7 +27,7 @@ export const makeEvent = ({destination, type, dateStart, dateEnd, price, offers}
   <li class="trip-events__item">
     <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="${getEventIcon(type)}" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${getEventTitle(destination, type)}</h3>
 
@@ -41,7 +37,7 @@ export const makeEvent = ({destination, type, dateStart, dateEnd, price, offers}
           &mdash;
           <time class="event__end-time" datetime="${new Date(dateEnd).toISOString()}">${convertDateToTime(dateEnd)}</time>
         </p>
-        <p class="event__duration">${duration.hours}H ${duration.minutes}M</p>
+        <p class="event__duration">${duration}</p>
       </div>
 
       <p class="event__price">

@@ -1,3 +1,8 @@
+const ONE_MINUTE_MS = 60 * 1000;
+const FIVE_MINUTES_MS = 5 * 60 * 1000;
+const ONE_HOUR_MIN = 60;
+const ONE_DAY_MIN = 24 * 60;
+
 const MenuItems = [
   {
     title: `Table`,
@@ -47,9 +52,7 @@ const getRandomBoolean = () => Boolean(Math.round(Math.random()));
 const shuffleArray = (a) => {
   for (let i = a.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
-    let x = a[i];
-    a[i] = a[j];
-    a[j] = x;
+    [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 };
@@ -88,9 +91,9 @@ const getEvent = () => ({
     `Yalta`,
     `Simeiz`
   ][Math.floor(Math.random() * 4)],
-  dateStart: Math.round(((Date.now() + Math.floor(Math.random() * 7 * 24 * 60) * 60 * 1000) / (60 * 1000)) / 5) * 60 * 1000 * 5,
+  dateStart: Math.round((Date.now() + Math.floor(Math.random() * 7 * ONE_DAY_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS,
   get dateEnd() {
-    return Math.round(((this.dateStart + 10 * 60 * 1000 + Math.floor(Math.random() * 5 * 60) * 60 * 1000) / (60 * 1000)) / 5) * 60 * 1000 * 5;
+    return Math.round((this.dateStart + 10 * ONE_MINUTE_MS + Math.floor(Math.random() * 36 * ONE_HOUR_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
   },
   price: Math.ceil(Math.random() * 10) * 20,
   photos: [

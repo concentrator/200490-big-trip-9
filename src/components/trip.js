@@ -4,6 +4,8 @@ import {makeTripDay} from './trip-day';
 import {makeEvent} from './event';
 import {makeEventEdit} from './event-edit';
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
 const tripDaysContainer = createElement(`ul`, `trip-days`);
 
 const getMinMaxDates = (events) => {
@@ -52,11 +54,11 @@ const getTripDays = (days, eventsList) => {
 export const makeTrip = (events) => {
 
   const date = getMinMaxDates(events);
-  const daysCount = 1 + Math.ceil((date.max - date.min) / (24 * 60 * 60 * 1000));
+  const daysCount = 1 + Math.ceil((date.max - date.min) / (ONE_DAY_MS));
   const days = new Array(daysCount).fill(0);
 
   days.forEach((d, i) => {
-    days[i] = (i === 0) ? date.min : days[i - 1] + 24 * 60 * 60 * 1000;
+    days[i] = (i === 0) ? date.min : days[i - 1] + ONE_DAY_MS;
   });
 
   let eventsList = events.slice();
