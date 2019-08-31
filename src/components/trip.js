@@ -5,7 +5,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 class Trip {
   constructor(events) {
-    this._events = events;
+    this._events = this._sortEvents(events);
     this._destinations = this._getDestinations();
     this._startDate = this._getStartDate();
     this._endDate = this._getEndDate();
@@ -13,6 +13,12 @@ class Trip {
     this._eventsByDays = this._splitEventsByDays();
     this._totalCost = this._getTotalCost();
     this._element = null;
+  }
+
+  _sortEvents(events) {
+    return events.sort((a, b) => {
+      return a.dateStart - b.dateStart;
+    });
   }
 
   _getDestinations() {
@@ -45,9 +51,7 @@ class Trip {
 
   _splitEventsByDays() {
     let eventsList = this._events.slice();
-    eventsList.sort((a, b) => {
-      return a.dateStart - b.dateStart;
-    });
+
     const eventsByDays = this._daysList.map((day) => {
 
       let dayEvents = [];
