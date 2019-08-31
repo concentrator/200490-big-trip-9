@@ -1,110 +1,122 @@
-import {render} from '../utils';
 import {createElement} from '../utils';
-import {makeTripDay} from './trip-day';
-import {makeEvent} from './event';
-import {makeEventEdit} from './event-edit';
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-const tripDaysContainer = createElement(`ul`, `trip-days`);
 
-const getMinMaxDates = (events) => {
-  const startDates = events.map((event) => Date.parse(new Date(event.dateStart).toDateString()));
-  const endDates = events.map((event) => Date.parse(new Date(event.dateEnd).toDateString()));
-  return {
-    min: Math.min(...startDates),
-    max: Math.max(...endDates)
-  };
-};
+class Trip {
+  constructor(events) {
+    this._events = this._sortEvents(events);
+    this._destinations = this._getDestinations();
+    this._startDate = this._getStartDate();
+    this._endDate = this._getEndDate();
+    this._daysList = this._getDaysList();
+    this._eventsByDays = this._splitEventsByDays();
+    this._totalCost = this._getTotalCost();
+    this._element = null;
+  }
 
-const getTripCost = (events) => {
-  const offersCostTotal = events.map((event) => {
-    let eventOffersCost = 0;
-    if (event.offers.length) {
-      eventOffersCost = event.offers.map((offer) => offer.isSelected ? offer.price : 0).reduce((total, current) => total + current);
-    }
-    return eventOffersCost;
-  }).reduce((total, current) => total + current);
+  _sortEvents(events) {
+    return events.sort((a, b) => {
+      return a.dateStart - b.dateStart;
+    });
+  }
 
-  const eventsCostTotal = events.map((event) => event.price).reduce((total, current) => total + current);
+  _getDestinations() {
+    return this._events.map((event) => event.destination);
+  }
 
-  return offersCostTotal + eventsCostTotal;
-};
+  _getStartDate() {
+    const dates = this._events.map((event) => Date.parse(new Date(event.dateStart).toDateString()));
+    return Math.min(...dates);
+  }
 
-const getTripDays = (days, eventsList) => {
-  const tripDays = days.map((day) => {
-    let dayEvents = [];
-    for (let event of eventsList) {
-      if (new Date(event.dateStart).toDateString() === new Date(day).toDateString()) {
-        dayEvents.push(event);
-      } else {
-        eventsList = eventsList.slice(dayEvents.length);
-        break;
-      }
-    }
-    return {
-      number: days.indexOf(day) + 1,
-      date: day,
-      events: dayEvents
-    };
-  });
-  return tripDays;
-};
+  _getEndDate() {
+    const dates = this._events.map((event) => Date.parse(new Date(event.dateEnd).toDateString()));
+    return Math.max(...dates);
+  }
 
-export const makeTrip = (events) => {
+  _getDaysList() {
+    const daysCount = 1 + Math.ceil((this._endDate - this._startDate) / (ONE_DAY_MS));
+    const days = new Array(daysCount).fill(0);
+    days.forEach((d, i) => {
+      days[i] = (i === 0) ? this._startDate : days[i - 1] + ONE_DAY_MS;
+    });
 
-  const date = getMinMaxDates(events);
-  const daysCount = 1 + Math.ceil((date.max - date.min) / (ONE_DAY_MS));
-  const days = new Array(daysCount).fill(0);
+    days.sort((a, b) => {
+      return a - b;
+    });
 
-  days.forEach((d, i) => {
-    days[i] = (i === 0) ? date.min : days[i - 1] + ONE_DAY_MS;
-  });
+    return days;
+  }
 
-  let eventsList = events.slice();
+  _splitEventsByDays() {
+    let eventsList = this._events.slice();
 
-  days.sort((a, b) => {
-    return a - b;
-  });
+    const eventsByDays = this._daysList.map((day) => {
 
-  eventsList.sort((a, b) => {
-    return a.dateStart - b.dateStart;
-  });
-
-  const destinations = eventsList.map((event) => event.destination);
-
-  const tripCost = getTripCost(eventsList);
-
-  const tripDays = getTripDays(days, eventsList);
-
-  return {
-    info: {
-      dateStart: date.min,
-      dateEnd: date.max,
-      destinations,
-      cost: tripCost
-    },
-    days: tripDays
-  };
-};
-
-export const renderTripDayList = (tripDays, init = false) => {
-  tripDays.forEach((day, dayIndex) => {
-    if (day.events.length) {
-      const eventsContainer = createElement(`ul`, `trip-events__list`);
-      const tripDayItem = createElement(`li`, `trip-days__item day`);
-      render(tripDayItem, `beforeend`, makeTripDay, day);
-      day.events.forEach((event, eventIndex) => {
-        if (init && dayIndex === 0 && eventIndex === 0) {
-          render(eventsContainer, `beforeend`, makeEventEdit, event);
+      let dayEvents = [];
+      for (let event of eventsList) {
+        if (new Date(event.dateStart).toDateString() === new Date(day).toDateString()) {
+          dayEvents.push(event);
         } else {
-          render(eventsContainer, `beforeend`, makeEvent, event);
+          eventsList = eventsList.slice(dayEvents.length);
+          break;
         }
-      });
-      tripDayItem.appendChild(eventsContainer);
-      tripDaysContainer.appendChild(tripDayItem);
-    }
-  });
+      }
 
-  return tripDaysContainer;
-};
+      return [
+        this._daysList.indexOf(day) + 1,
+        {
+          date: day,
+          events: dayEvents
+        }
+      ];
+    });
+
+    return new Map(eventsByDays);
+  }
+
+  _getTotalCost() {
+    const offersCostTotal = this._events.map((event) => {
+      let eventOffersCost = 0;
+      if (event.offers.length) {
+        eventOffersCost = event.offers.map((offer) => offer.isSelected ? offer.price : 0).reduce((total, current) => total + current);
+      }
+      return eventOffersCost;
+    }).reduce((total, current) => total + current);
+
+    const eventsCostTotal = this._events.map((event) => event.price).reduce((total, current) => total + current);
+
+    return offersCostTotal + eventsCostTotal;
+  }
+
+  get info() {
+    return {
+      destinations: this._destinations,
+      dateStart: this._startDate,
+      dateEnd: this._endDate,
+      cost: this._totalCost
+    };
+  }
+
+  get eventsByDays() {
+    return this._eventsByDays;
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return `<ul class="trip-days"></ul>`;
+  }
+}
+
+export default Trip;
