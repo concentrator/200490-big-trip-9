@@ -1,23 +1,31 @@
 import {createElement} from '../utils';
-import {renderItems} from '../utils';
 
-const NAV_WRAPPER_CLASS = `trip-controls__trip-tabs trip-tabs`;
 
-const navWrapper = createElement(`nav`, NAV_WRAPPER_CLASS);
+class Menu {
+  constructor(items) {
+    this._items = items;
+    this._element = null;
+  }
 
-const menuParams = {
-  title: ``,
-  url: `#`,
-  isActive: false
-};
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
 
-const createMenuItemTemplate = ({title, url, isActive}) => {
-  return `
-  <a class="trip-tabs__btn${isActive ? ` trip-tabs__btn--active` : ``}" href="${url}">${title}</a>`;
-};
+  removeElement() {
+    this._element = null;
+  }
 
-export const renderMenu = (params) => {
-  renderItems(navWrapper, `beforeend`, createMenuItemTemplate, menuParams, params);
-  return navWrapper;
-};
+  getTemplate() {
+    return `
+    <nav class="trip-controls__trip-tabs trip-tabs">
+      ${this._items.map((item) => `
+      <a class="trip-tabs__btn${item.isActive ? ` trip-tabs__btn--active` : ``}"
+        href="${item.url ? item.url : `#`}">${item.title}</a>`).join(``)}
+    </nav>`;
+  }
+}
 
+export default Menu;

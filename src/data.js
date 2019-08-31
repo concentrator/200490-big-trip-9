@@ -33,13 +33,16 @@ const SortItems = [
   },
   {
     id: `event`,
+    isSortable: true,
     isChecked: true
   },
   {
-    id: `time`
+    id: `time`,
+    isSortable: true
   },
   {
-    id: `price`
+    id: `price`,
+    isSortable: true
   },
   {
     id: `offers`,
@@ -129,15 +132,15 @@ const getEvent = () => ({
   isFavorite: getRandomBoolean()
 });
 
-const getEventList = (count) => Array.from(new Array(count), () => getEvent());
+const getEventListMock = (count) => Array.from(new Array(count), () => getEvent());
 
-const eventList = getEventList(4);
+const events = getEventListMock(4);
 
 const data = {
   MenuItems,
   FilterItems,
   SortItems,
-  eventList
+  events
 };
 
 export default data;

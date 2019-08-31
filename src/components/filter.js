@@ -1,29 +1,35 @@
-import {createForm} from '../utils';
-import {createButton} from '../utils';
-import {renderItems} from '../utils';
+import {createElement} from '../utils';
 import {makeFirstLetterUppercase} from '../utils';
 
-const FILTERS_FORM_CLASS = `trip-filters`;
 
-const filterItemParams = {
-  id: ``,
-  isChecked: false
-};
+class Filter {
+  constructor(items) {
+    this._items = items;
+    this._element = null;
+  }
 
-const createFilterItemTemplate = ({id, isChecked}) => {
-  const label = makeFirstLetterUppercase(id);
-  return `
-  <div class="trip-filters__filter">
-    <input id="filter-${id}" class="trip-filters__filter-input visually-hidden" type="radio" name="trip-filter" value="${id}"${isChecked ? ` checked` : ``}>
-    <label class="trip-filters__filter-label" for="filter-${id}">${label}</label>
-  </div>`;
-};
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
 
-export const renderFilter = (params) => {
-  const form = createForm(FILTERS_FORM_CLASS);
-  renderItems(form, `beforeend`, createFilterItemTemplate, filterItemParams, params);
-  const submit = createButton(`submit`, `visually-hidden`, `Accept filter`);
-  form.appendChild(submit);
-  return form;
-};
+  removeElement() {
+    this._element = null;
+  }
 
+  getTemplate() {
+    return `
+    <form class="trip-filters" action="#" method="get">
+    ${this._items.map((item) => `
+      <div class="trip-filters__filter">
+        <input id="filter-${item.id}" class="trip-filters__filter-input visually-hidden" type="radio" name="trip-filter" value="${item.id}"${item.isChecked ? ` checked` : ``}>
+        <label class="trip-filters__filter-label" for="filter-${item.id}">${makeFirstLetterUppercase(item.id)}</label>
+      </div>`).join(``)}
+      <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>`;
+  }
+}
+
+export default Filter;
