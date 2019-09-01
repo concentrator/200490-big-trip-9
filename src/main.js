@@ -5,6 +5,7 @@ import TripInfo from './components/trip-info';
 import Menu from './components/menu';
 import Filter from './components/filter';
 import Sort from './components/sort';
+import Message from './components/message';
 
 import Event from './components/event';
 import EventEdit from './components/event-edit';
@@ -14,9 +15,6 @@ import Trip from './components/trip';
 
 import data from './data';
 
-
-const tripInfoContainer = document.querySelector(`.trip-info`);
-const tripControls = document.querySelector(`.trip-controls`);
 
 const renderTripInfo = (tripinfo, container) => {
   const tripInfo = new TripInfo(tripinfo);
@@ -94,20 +92,32 @@ const renderEventsList = (tripDays, container) => {
   });
 };
 
-const board = document.querySelector(`.trip-events`);
+const initBoard = (eventsList) => {
 
-const trip = new Trip(data.events);
+  const tripInfoContainer = document.querySelector(`.trip-info`);
+  const tripControls = document.querySelector(`.trip-controls`);
+  const board = document.querySelector(`.trip-events`);
 
-const tripDaysList = trip.getElement();
+  renderMenu(data.MenuItems, tripControls);
+  renderFilter(data.FilterItems, tripControls);
 
-renderTripInfo(trip.info, tripInfoContainer);
-renderMenu(data.MenuItems, tripControls);
-renderFilter(data.FilterItems, tripControls);
-renderSort(data.SortItems, board);
-renderEventsList(trip.eventsByDays, tripDaysList);
+  if (eventsList.length) {
+    const trip = new Trip(eventsList);
 
+    renderTripInfo(trip.info, tripInfoContainer);
+    document.querySelector(`.trip-info__cost-value`).textContent = trip.info.cost;
 
-board.appendChild(tripDaysList);
+    const tripDaysList = trip.getElement();
 
-document.querySelector(`.trip-info__cost-value`).textContent = trip.info.cost;
+    renderSort(data.SortItems, board);
+    renderEventsList(trip.eventsByDays, tripDaysList);
 
+    board.appendChild(tripDaysList);
+
+  } else {
+    const message = new Message(`no-points`);
+    render(board, message.getElement(), Position.BEFOREEND);
+  }
+};
+
+initBoard(data.events);
