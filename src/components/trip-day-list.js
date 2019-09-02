@@ -1,7 +1,7 @@
 import AbstractComponent from './abstract-component';
 
 
-class TripDaysList extends AbstractComponent {
+class TripDayList extends AbstractComponent {
   constructor() {
     super();
   }
@@ -11,4 +11,4 @@ class TripDaysList extends AbstractComponent {
   }
 }
 
-export default TripDaysList;
+export default TripDayList;

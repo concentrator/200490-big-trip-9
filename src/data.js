@@ -26,30 +26,6 @@ const FilterItems = [
   }
 ];
 
-const SortItems = [
-  {
-    id: `day`,
-    isSortable: false
-  },
-  {
-    id: `event`,
-    isSortable: true,
-    isChecked: true
-  },
-  {
-    id: `time`,
-    isSortable: true
-  },
-  {
-    id: `price`,
-    isSortable: true
-  },
-  {
-    id: `offers`,
-    isSortable: false
-  }
-];
-
 const getRandomBoolean = () => Boolean(Math.round(Math.random()));
 
 const shuffleArray = (a) => {
@@ -139,7 +115,6 @@ const events = getEventListMock(4);
 const data = {
   MenuItems,
   FilterItems,
-  SortItems,
   events
 };
 

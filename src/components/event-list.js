@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component';
 
-class EventsList extends AbstractComponent {
+class EventList extends AbstractComponent {
   constructor() {
     super();
   }
@@ -10,4 +10,4 @@ class EventsList extends AbstractComponent {
   }
 }
 
-export default EventsList;
+export default EventList;
