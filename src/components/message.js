@@ -1,25 +1,14 @@
-import {createElement} from '../utils';
+import AbstractComponent from './abstract-component';
 
 const MESSAGE = {
   'no-points': `Click New Event to create your first point`
 };
 
 
-class Message {
+class Message extends AbstractComponent {
   constructor(type) {
+    super();
     this._type = type;
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {

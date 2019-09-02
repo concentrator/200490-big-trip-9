@@ -11,6 +11,7 @@ import Event from './components/event';
 import EventEdit from './components/event-edit';
 import EventsList from './components/events-list';
 import TripDay from './components/trip-day';
+import TripDaysList from './components/trip-days-list';
 import Trip from './components/trip';
 
 import data from './data';
@@ -107,7 +108,7 @@ const initBoard = (eventsList) => {
     renderTripInfo(trip.info, tripInfoContainer);
     document.querySelector(`.trip-info__cost-value`).textContent = trip.info.cost;
 
-    const tripDaysList = trip.getElement();
+    const tripDaysList = new TripDaysList().getElement();
 
     renderSort(data.SortItems, board);
     renderEventsList(trip.eventsByDays, tripDaysList);

@@ -1,8 +1,9 @@
-import {createElement} from '../utils';
+import AbstractComponent from './abstract-component';
 import {makeFirstLetterUppercase} from '../utils';
 
-class EventEdit {
+class EventEdit extends AbstractComponent {
   constructor({destination, type, dateStart, dateEnd, price, photos, description, offers, isFavorite}) {
+    super();
     this._destination = destination;
     this._type = type;
     this._dateStart = dateStart;
@@ -12,22 +13,10 @@ class EventEdit {
     this._description = description;
     this._offers = offers;
     this._isFavorite = isFavorite;
-    this._element = null;
   }
 
   _getPreposition() {
     return ([`sightseeing`, `restaurant`, `check-in`].some((it) => it === this._type)) ? `in` : `to`;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {

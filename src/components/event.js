@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import AbstractComponent from './abstract-component';
 import {convertDateToTime} from '../utils';
 import {makeFirstLetterUppercase} from '../utils';
 
@@ -6,8 +6,9 @@ const ONE_HOUR_SEC = 60 * 60;
 const ONE_DAY_SEC = 24 * 60 * 60;
 
 
-class Event {
+class Event extends AbstractComponent {
   constructor({destination, type, dateStart, dateEnd, price, offers}) {
+    super();
     this._destination = destination;
     this._type = type;
     this._dateStart = dateStart;
@@ -16,7 +17,6 @@ class Event {
     this._offers = offers;
     this._title = this._getTitle();
     this._duration = this._getDuration();
-    this._element = null;
   }
 
   _getPreposition() {
@@ -50,17 +50,6 @@ class Event {
     }
 
     return duration;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   getTemplate() {

@@ -1,5 +1,3 @@
-import {createElement} from '../utils';
-
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 
@@ -12,7 +10,6 @@ class Trip {
     this._daysList = this._getDaysList();
     this._eventsByDays = this._splitEventsByDays();
     this._totalCost = this._getTotalCost();
-    this._element = null;
   }
 
   _sortEvents(events) {
@@ -101,21 +98,6 @@ class Trip {
 
   get eventsByDays() {
     return this._eventsByDays;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
-
-  getTemplate() {
-    return `<ul class="trip-days"></ul>`;
   }
 }
 
