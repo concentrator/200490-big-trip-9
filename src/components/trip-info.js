@@ -1,23 +1,13 @@
-import {createElement} from '../utils';
+import AbstractComponent from './abstract-component';
 import {formatDateShort} from '../utils';
 
 
-class TripInfo {
+class TripInfo extends AbstractComponent {
   constructor({destinations, dateStart, dateEnd}) {
+    super();
     this._destinations = destinations;
     this._dateStart = dateStart;
     this._dateEnd = dateEnd;
-    this._element = null;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
     this._element = null;
   }
 

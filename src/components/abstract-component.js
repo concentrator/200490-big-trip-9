@@ -1,9 +1,13 @@
 import {createElement} from '../utils';
 
 
-class EventsList {
+class AbstractComponent {
   constructor() {
     this._element = null;
+
+    if (new.target === AbstractComponent) {
+      throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
+    }
   }
 
   getElement() {
@@ -18,8 +22,8 @@ class EventsList {
   }
 
   getTemplate() {
-    return `<ul class="trip-events__list"></ul>`;
+    throw new Error(`Abstract method not implemented: getTemplate`);
   }
 }
 
-export default EventsList;
+export default AbstractComponent;

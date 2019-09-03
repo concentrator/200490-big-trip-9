@@ -1,21 +1,34 @@
-import {createElement} from '../utils';
+import AbstractComponent from './abstract-component';
 import {makeFirstLetterUppercase} from '../utils';
 
-class Sort {
-  constructor(items) {
-    this._items = items;
-    this._element = null;
+const SORT_ITEMS = [
+  {
+    id: `day`,
+    isSortable: false
+  },
+  {
+    id: `event`,
+    isSortable: true,
+    isChecked: true
+  },
+  {
+    id: `time`,
+    isSortable: true
+  },
+  {
+    id: `price`,
+    isSortable: true
+  },
+  {
+    id: `offers`,
+    isSortable: false
   }
+];
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+class Sort extends AbstractComponent {
+  constructor() {
+    super();
+    this._items = SORT_ITEMS;
   }
 
   getTemplate() {
