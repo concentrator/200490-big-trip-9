@@ -51,66 +51,78 @@ const getRandomDescription = () => {
   ]).slice(0, Math.ceil(Math.random() * 3)).join(` `);
 };
 
-const getEvent = () => ({
-  type: [
-    `taxi`,
-    `bus`,
-    `train`,
-    `ship`,
-    `transport`,
-    `drive`,
-    `flight`,
-    `check-in`,
-    `sightseeing`,
-    `restaurant`
-  ][Math.floor(Math.random() * 10)],
-  destination: [
-    `Simferopol`,
-    `Sevastopol`,
-    `Yalta`,
-    `Simeiz`
-  ][Math.floor(Math.random() * 4)],
-  dateStart: Math.round((Date.now() + Math.floor(Math.random() * 7 * ONE_DAY_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS,
-  get dateEnd() {
-    return Math.round((this.dateStart + 10 * ONE_MINUTE_MS + Math.floor(Math.random() * 36 * ONE_HOUR_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
-  },
-  price: Math.ceil(Math.random() * 10) * 20,
-  photos: [
-    `http://picsum.photos/300/150?r=${Math.random()}`,
-    `http://picsum.photos/300/150?r=${Math.random()}`,
-    `http://picsum.photos/300/150?r=${Math.random()}`,
-    `http://picsum.photos/300/150?r=${Math.random()}`,
-    `http://picsum.photos/300/150?r=${Math.random()}`
-  ],
-  description: getRandomDescription(),
-  offers: shuffleArray([
-    {
-      title: `Add luggage`,
-      price: 10,
-      isSelected: getRandomBoolean()
-    },
-    {
-      title: `Switch to comfort class`,
-      price: 150,
-      isSelected: getRandomBoolean()
-    },
-    {
-      title: `Add meal`,
-      price: 2,
-      isSelected: getRandomBoolean()
-    },
-    {
-      title: `Choose seats`,
-      price: 9,
-      isSelected: getRandomBoolean()
-    }
-  ]).slice(0, Math.floor(Math.random() * 3)),
-  isFavorite: getRandomBoolean()
-});
+const getEvent = () => {
+  const dateStart = Math.round((Date.now() + Math.floor(Math.random() * 7 * ONE_DAY_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
+
+  const dateEnd = Math.round((dateStart + 10 * ONE_MINUTE_MS + Math.floor(Math.random() * 36 * ONE_HOUR_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
+
+  return {
+    type: [
+      `taxi`,
+      `bus`,
+      `train`,
+      `ship`,
+      `transport`,
+      `drive`,
+      `flight`,
+      `check-in`,
+      `sightseeing`,
+      `restaurant`
+    ][Math.floor(Math.random() * 10)],
+    destination: [
+      `Simferopol`,
+      `Sevastopol`,
+      `Yalta`,
+      `Simeiz`
+    ][Math.floor(Math.random() * 4)],
+    dateStart,
+    dateEnd,
+    price: Math.ceil(Math.random() * 10) * 20,
+    photos: [
+      `http://picsum.photos/300/150?r=${Math.random()}`,
+      `http://picsum.photos/300/150?r=${Math.random()}`,
+      `http://picsum.photos/300/150?r=${Math.random()}`,
+      `http://picsum.photos/300/150?r=${Math.random()}`,
+      `http://picsum.photos/300/150?r=${Math.random()}`
+    ],
+    description: getRandomDescription(),
+    offers: shuffleArray([
+      {
+        title: `Add luggage`,
+        price: 10,
+        isSelected: getRandomBoolean()
+      },
+      {
+        title: `Switch to comfort class`,
+        price: 150,
+        isSelected: getRandomBoolean()
+      },
+      {
+        title: `Add meal`,
+        price: 2,
+        isSelected: getRandomBoolean()
+      },
+      {
+        title: `Choose seats`,
+        price: 9,
+        isSelected: getRandomBoolean()
+      }
+    ]).slice(0, Math.floor(Math.random() * 3)),
+    isFavorite: getRandomBoolean()
+  };
+};
 
 const getEventListMock = (count) => Array.from(new Array(count), () => getEvent());
 
-const events = getEventListMock(4);
+const setEventsDuration = (events) => {
+  return events.map((event) => {
+    event.duration = event.dateEnd - event.dateStart;
+    return event;
+  });
+};
+
+let events = getEventListMock(4);
+events = setEventsDuration(events);
 
 const data = {
   MenuItems,
