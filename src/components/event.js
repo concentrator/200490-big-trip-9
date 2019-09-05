@@ -7,7 +7,7 @@ const ONE_DAY_SEC = 24 * 60 * 60;
 
 
 class Event extends AbstractComponent {
-  constructor({destination, type, dateStart, dateEnd, price, offers}) {
+  constructor({destination, type, dateStart, dateEnd, duration, price, offers}) {
     super();
     this._destination = destination;
     this._type = type;
@@ -16,7 +16,7 @@ class Event extends AbstractComponent {
     this._price = price;
     this._offers = offers;
     this._title = this._getTitle();
-    this._duration = this._getDuration();
+    this._duration = duration;
   }
 
   _getPreposition() {
@@ -27,9 +27,8 @@ class Event extends AbstractComponent {
     return `${makeFirstLetterUppercase(this._type)} ${this._getPreposition()} ${this._destination}`;
   }
 
-  _getDuration() {
-    let delta = this._dateEnd - this._dateStart;
-    delta = parseInt((delta) / 1000, 10);
+  _getformattedDuration() {
+    let delta = parseInt((this._duration) / 1000, 10);
 
     let days = Math.floor(delta / ONE_DAY_SEC);
     let hours = Math.floor((delta - days * ONE_DAY_SEC) / ONE_HOUR_SEC);
@@ -67,7 +66,7 @@ class Event extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${new Date(this._dateEnd).toISOString()}">${convertDateToTime(this._dateEnd)}</time>
           </p>
-          <p class="event__duration">${this._duration}</p>
+          <p class="event__duration">${this._getformattedDuration()}</p>
         </div>
 
         <p class="event__price">

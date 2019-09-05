@@ -30,7 +30,7 @@ class TripController {
   }
 
   _sortEvents(events) {
-    return events.sort((a, b) => {
+    return events.slice().sort((a, b) => {
       return a.dateStart - b.dateStart;
     });
   }
@@ -73,7 +73,6 @@ class TripController {
 
   _splitEventsByDays() {
     let eventsList = this._events.slice();
-
     const eventsByDays = this._daysList.map((day) => {
 
       let dayEvents = [];
@@ -156,11 +155,10 @@ class TripController {
     render(container, eventComponent.getElement(), Position.BEFOREEND);
   }
 
-  _renderEventList(container) {
-
+  _renderEventList() {
     this._eventsByDays.forEach((day, number) => {
       if (day.events.length) {
-        const tripDayItem = new TripDay(number, day.date).getElement();
+        const tripDayElement = new TripDay(number, day.date).getElement();
 
         const eventsContainer = new EventList().getElement();
 
@@ -168,10 +166,52 @@ class TripController {
           this._renderEvent(eventsContainer, event);
         });
 
-        tripDayItem.appendChild(eventsContainer);
-        container.appendChild(tripDayItem);
+        tripDayElement.appendChild(eventsContainer);
+        this._tripDayList.getElement().appendChild(tripDayElement);
       }
     });
+  }
+
+  _renderEventListSorted() {
+    const tripDayElement = new TripDay().getElement();
+
+    const eventsContainer = new EventList().getElement();
+
+    this._events.forEach((event) => {
+      this._renderEvent(eventsContainer, event);
+    });
+
+    tripDayElement.appendChild(eventsContainer);
+    this._tripDayList.getElement().appendChild(tripDayElement);
+  }
+
+  _onSortElementClick(e) {
+
+    if (!e.target.classList.contains(`trip-sort__btn`)) {
+      return;
+    }
+
+    this._tripDayList.getElement().innerHTML = ``;
+
+    switch (e.target.htmlFor.split(`-`)[1]) {
+      case `event`:
+        this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = `Day`;
+        this._events.sort((a, b) => a.dateStart - b.dateStart);
+        this._renderEventList();
+        break;
+
+      case `time`:
+        this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = ``;
+        this._events.sort((a, b) => b.duration - a.duration);
+        this._renderEventListSorted();
+        break;
+
+      case `price`:
+        this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = ``;
+        this._events.sort((a, b) => b.price - a.price);
+        this._renderEventListSorted();
+        break;
+    }
   }
 
   init() {
@@ -186,7 +226,10 @@ class TripController {
 
       render(this._container, this._sort.getElement(), Position.BEFOREEND);
 
-      this._renderEventList(this._tripDayList.getElement());
+      this._sort.getElement()
+        .addEventListener(`click`, (e) => this._onSortElementClick(e));
+
+      this._renderEventList();
 
       this._container.appendChild(this._tripDayList.getElement());
 
