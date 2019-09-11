@@ -27,6 +27,6 @@ renderFilter(data.FilterItems, tripControls);
 
 const board = document.querySelector(`.trip-events`);
 
-const trip = new TripController(board, data.events);
+const trip = new TripController(board, data.events, data.offerList, data.destionationList);
 
 trip.init();

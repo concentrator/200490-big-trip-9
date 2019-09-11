@@ -1,22 +1,90 @@
 import AbstractComponent from './abstract-component';
 import {makeFirstLetterUppercase} from '../utils';
+import {unrender} from '../utils';
+import data from '../data';
+
 
 class EventEdit extends AbstractComponent {
-  constructor({destination, type, dateStart, dateEnd, price, photos, description, offers, isFavorite}) {
+  constructor({offerList, destinationList, destination, type, dateStart, dateEnd, price, offers, isFavorite}) {
     super();
-    this._destination = destination;
     this._type = type;
+    this._destination = destination;
     this._dateStart = dateStart;
     this._dateEnd = dateEnd;
     this._price = price;
-    this._photos = photos;
-    this._description = description;
     this._offers = offers;
+    this._offerList = offerList;
+    this._destinationList = destinationList;
     this._isFavorite = isFavorite;
   }
 
-  _getPreposition() {
-    return ([`sightseeing`, `restaurant`, `check-in`].some((it) => it === this._type)) ? `in` : `to`;
+  _formatDate(date) {
+    return new Date(date).toLocaleString(`en-GB`, {year: `numeric`, month: `2-digit`, day: `2-digit`, hour: `2-digit`, minute: `2-digit`}).replace(`,`, ``).replace(/\//g, `.`);
+  }
+
+  _getPreposition(type) {
+    return ([`sightseeing`, `restaurant`, `check-in`].some((it) => it === type)) ? `in` : `to`;
+  }
+
+  _getTypeSelectorTemplate(type) {
+    return `
+    <div class="event__type-item">
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${this._type === type ? `checked` : ``}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
+        ${makeFirstLetterUppercase(type)}
+      </label>
+    </div>`;
+  }
+
+  _getOffersTemplate(offerList, offers) {
+    return `
+    <section class="event__section  event__section--offers">
+
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${offerList.map((offer, index) => `
+        <div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer-${index}" ${offers.some((it) => it === offer) ? `checked` : ``}>
+          <label class="event__offer-label" for="event-offer-${index}">
+            <span class="event__offer-title">${offer.name}</span>
+            &plus;
+            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`).join(`\n`)}
+      </div>
+    </section>`;
+  }
+
+  _getDestinationTemplate(destination) {
+    return `
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${destination.pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join(`\n`)}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  renderOffers(offerList, offers = []) {
+    if (this.getElement().querySelector(`.event__section--offers`)) {
+      unrender(this.getElement().querySelector(`.event__section--offers`));
+    }
+    if (!offerList.length) {
+      return;
+    }
+    this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`afterbegin`, this._getOffersTemplate(offerList, offers));
+  }
+
+  renderDestination(destination) {
+    if (this.getElement().querySelector(`.event__section--destination`)) {
+      unrender(this.getElement().querySelector(`.event__section--destination`));
+    }
+    this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, this._getDestinationTemplate(destination));
   }
 
   getTemplate() {
@@ -34,73 +102,24 @@ class EventEdit extends AbstractComponent {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${this._type === `taxi` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${this._type === `taxi` ? `bus` : ``}>
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${this._type === `train` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${this._type === `ship` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport" ${this._type === `transport` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${this._type === `drive` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${this._type === `flight` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
+                ${data.EVENT_TYPES.Transfer.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${this._type === `check-in` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${this._type === `sightseeing` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${this._type === `restaurant` ? `checked` : ``}>
-                  <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                ${data.EVENT_TYPES.Activity.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
               </fieldset>
             </div>
           </div>
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${makeFirstLetterUppercase(this._type)} ${this._getPreposition()}
+              ${makeFirstLetterUppercase(this._type)} ${this._getPreposition(this._type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name}" list="destination-list-1" autocomplete="off">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${this._destinationList.map((destination) => `
+              <option value="${destination.name}"></option>`)}
             </datalist>
           </div>
 
@@ -108,12 +127,12 @@ class EventEdit extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${new Date(this._dateStart).toLocaleString(`en-GB`, {year: `2-digit`, month: `2-digit`, day: `2-digit`, hour: `2-digit`, minute: `2-digit`})}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._formatDate(this._dateStart)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${new Date(this._dateEnd).toLocaleString(`en-GB`, {year: `2-digit`, month: `2-digit`, day: `2-digit`, hour: `2-digit`, minute: `2-digit`})}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._formatDate(this._dateEnd)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -141,34 +160,10 @@ class EventEdit extends AbstractComponent {
         </header>
 
         <section class="event__details">
-        ${this._offers.length ? `
-          <section class="event__section  event__section--offers">
+          ${this._offerList.length ? this._getOffersTemplate(this._offerList, this._offers) : ``}
 
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+          ${this._getDestinationTemplate(this._destination)}
 
-            <div class="event__available-offers">
-              ${this._offers.map((offer, index) => `
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer-${index}" ${offer.isSelected ? `checked` : ``}>
-                <label class="event__offer-label" for="event-offer-${index}">
-                  <span class="event__offer-title">${offer.title}</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-                </label>
-              </div>`).join(`\n`)}
-            </div>
-          </section>` : ``}
-
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${this._description}</p>
-
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-                ${this._photos.map((src) => `<img class="event__photo" src="${src}" alt="Event photo">`).join(`\n`)}
-              </div>
-            </div>
-          </section>
         </section>
       </form>
     </li>`;
