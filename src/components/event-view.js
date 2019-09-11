@@ -6,10 +6,10 @@ const ONE_HOUR_SEC = 60 * 60;
 const ONE_DAY_SEC = 24 * 60 * 60;
 
 
-class Event extends AbstractComponent {
+class EventView extends AbstractComponent {
   constructor({destination, type, dateStart, dateEnd, duration, price, offers}) {
     super();
-    this._destination = destination;
+    this._destination = destination.name;
     this._type = type;
     this._dateStart = dateStart;
     this._dateEnd = dateEnd;
@@ -34,7 +34,7 @@ class Event extends AbstractComponent {
     let hours = Math.floor((delta - days * ONE_DAY_SEC) / ONE_HOUR_SEC);
     let minutes = Math.round((delta - days * ONE_DAY_SEC - hours * ONE_HOUR_SEC) / 60);
 
-    days = `0${days}D`.slice(-3);
+    days = days < 10 ? `0${days}D` : `${days}D`;
     hours = `0${hours}H`.slice(-3);
     minutes = `0${minutes}M`.slice(-3);
 
@@ -75,9 +75,9 @@ class Event extends AbstractComponent {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${this._offers.filter((it) => it.isSelected).map((offer) => `
+          ${this._offers.map((offer) => `
           <li class="event__offer">
-            <span class="event__offer-title">${offer.title}</span>
+            <span class="event__offer-title">${offer.name}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </li>`).join(``)}
@@ -91,4 +91,4 @@ class Event extends AbstractComponent {
   }
 }
 
-export default Event;
+export default EventView;

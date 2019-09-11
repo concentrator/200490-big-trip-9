@@ -1,8 +1,9 @@
 import {render} from '../utils';
+import {unrender} from '../utils';
 import {Position} from '../utils';
 
-import Event from '../components/event';
-import EventEdit from '../components/event-edit';
+import EventController from './event';
+
 import EventList from '../components/event-list';
 import TripDay from '../components/trip-day';
 import TripDayList from '../components/trip-day-list';
@@ -14,12 +15,24 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 
 class TripController {
-  constructor(container, events) {
+  constructor(container, events, offerList, destinationList) {
     this._events = events.length ? this._sortEvents(events) : [];
+    this._offerList = offerList;
+    this._destinationList = destinationList;
     this._container = container;
     this._sort = new Sort();
     this._tripDayList = new TripDayList();
 
+    this._calculateTrip();
+
+    this._tripInfo = new TripInfo(this._info);
+
+    this._onChangeView = this._onChangeView.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
+    this._subscriptions = [];
+  }
+
+  _calculateTrip() {
     this._destinations = this._getDestinations();
     this._startDate = this._getStartDate();
     this._endDate = this._getEndDate();
@@ -36,7 +49,7 @@ class TripController {
   }
 
   _getDestinations() {
-    return this._events.map((event) => event.destination);
+    return this._events.map((event) => event.destination.name);
   }
 
   _getStartDate() {
@@ -112,47 +125,11 @@ class TripController {
     };
   }
 
-  _renderTripInfo(container) {
-    const tripInfo = new TripInfo(this._info);
-    render(container, tripInfo.getElement(), Position.AFTERBEGIN);
-  }
-
   _renderEvent(container, event) {
-    const eventComponent = new Event(event);
-    const eventEditComponent = new EventEdit(event);
+    const eventController =
+      new EventController(container, event, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    eventComponent.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, (e) => {
-        e.preventDefault();
-        container.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
-        document.addEventListener(`keydown`, onEscKeyDown);
-      });
-
-    eventEditComponent.getElement()
-      .querySelector(`.event__rollup-btn`)
-      .addEventListener(`click`, (e) => {
-        e.preventDefault();
-        container.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      });
-
-    eventEditComponent.getElement()
-      .querySelector(`.event--edit`)
-      .addEventListener(`submit`, (e) => {
-        e.preventDefault();
-        container.replaceChild(event.getElement(), eventEditComponent.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      });
-
-    render(container, eventComponent.getElement(), Position.BEFOREEND);
+    this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
 
   _renderEventList() {
@@ -214,21 +191,47 @@ class TripController {
     }
   }
 
+  _onDataChange(newData, oldData) {
+    this._events[this._events.findIndex((it) => it === oldData)] = newData;
+
+    this._renderTrip();
+
+    return true;
+  }
+
+  _renderTripInfo(container) {
+    render(container, this._tripInfo.getElement(), Position.AFTERBEGIN);
+    this._tripInfoContainer.querySelector(`.trip-info__cost-value`).textContent = this._info.cost;
+  }
+
+  _renderSort() {
+    render(this._container, this._sort.getElement(), Position.BEFOREEND);
+    this._sort.getElement()
+      .addEventListener(`click`, (e) => this._onSortElementClick(e));
+  }
+
+  _renderTrip() {
+    this._calculateTrip();
+    unrender(this._tripInfo.getElement());
+    this._tripInfo.removeElement();
+    this._tripInfo = new TripInfo(this._info);
+    this._renderTripInfo(this._tripInfoContainer);
+    this._tripDayList.getElement().innerHTML = ``;
+    this._renderEventList();
+  }
+
+  _onChangeView() {
+    this._subscriptions.forEach((subscription) => subscription());
+  }
+
   init() {
     const tripMain = document.querySelector(`.trip-main`);
-    const tripInfoContainer = tripMain.querySelector(`.trip-info`);
+    this._tripInfoContainer = tripMain.querySelector(`.trip-info`);
 
     if (this._events.length) {
 
-      this._renderTripInfo(tripInfoContainer);
-
-      tripInfoContainer.querySelector(`.trip-info__cost-value`).textContent = this._info.cost;
-
-      render(this._container, this._sort.getElement(), Position.BEFOREEND);
-
-      this._sort.getElement()
-        .addEventListener(`click`, (e) => this._onSortElementClick(e));
-
+      this._renderTripInfo(this._tripInfoContainer);
+      this._renderSort();
       this._renderEventList();
 
       this._container.appendChild(this._tripDayList.getElement());
