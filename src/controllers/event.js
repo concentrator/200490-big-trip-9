@@ -81,8 +81,13 @@ class EventController {
 
     const destinationInput = this._eventEdit.getElement().querySelector(`.event__input--destination`);
     destinationInput.addEventListener(`change`, (e) => {
+
+      // Удаляет красный аутлайн если до этого было введено некорректное значение
+      e.target.removeAttribute(`style`);
+
       const list = e.target.list;
       let destination = e.target.value;
+
       if (Array.from(list.options).some((it) => it.value === destination) &&
         this._destinationList.some((it) => it.name === destination)) {
 
@@ -128,6 +133,12 @@ class EventController {
         offers: getOffers(),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false
       };
+
+      if (!entry.destination) {
+        // Добавляет красный аутлайн если было введено некорректное значение и не дает сохранить форму
+        destinationInput.style.outlineColor = `red`;
+        return;
+      }
 
       this._onDataChange(entry, this._data);
     });
