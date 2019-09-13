@@ -30,6 +30,7 @@ class TripController {
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._subscriptions = [];
+    this._eventsSorted = false;
   }
 
   _calculateTrip() {
@@ -175,18 +176,21 @@ class TripController {
         this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = `Day`;
         this._events.sort((a, b) => a.dateStart - b.dateStart);
         this._renderEventList();
+        this._eventsSorted = false;
         break;
 
       case `time`:
         this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = ``;
         this._events.sort((a, b) => b.duration - a.duration);
         this._renderEventListSorted();
+        this._eventsSorted = true;
         break;
 
       case `price`:
         this._sort.getElement().querySelector(`.trip-sort__item--day`).textContent = ``;
         this._events.sort((a, b) => b.price - a.price);
         this._renderEventListSorted();
+        this._eventsSorted = true;
         break;
     }
   }
@@ -217,7 +221,11 @@ class TripController {
     this._tripInfo = new TripInfo(this._info);
     this._renderTripInfo(this._tripInfoContainer);
     this._tripDayList.getElement().innerHTML = ``;
-    this._renderEventList();
+    if (!this._eventsSorted) {
+      this._renderEventList();
+    } else {
+      this._renderEventListSorted();
+    }
   }
 
   _onChangeView() {

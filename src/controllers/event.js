@@ -81,8 +81,13 @@ class EventController {
 
     const destinationInput = this._eventEdit.getElement().querySelector(`.event__input--destination`);
     destinationInput.addEventListener(`change`, (e) => {
+
+      // Удаляет красный аутлайн если до этого было введено некорректное значение
+      e.target.removeAttribute(`style`);
+
       const list = e.target.list;
       let destination = e.target.value;
+
       if (Array.from(list.options).some((it) => it.value === destination) &&
         this._destinationList.some((it) => it.name === destination)) {
 
@@ -113,10 +118,10 @@ class EventController {
       };
 
       const getDate = (param) => {
-        const arr = formData.get(`event-${param}-time`).split(` `);
-        const YMD = arr[0].split(`.`);
-        [YMD[0], YMD[1], YMD[2]] = [YMD[2], YMD[1], YMD[0]];
-        return Date.parse(`${YMD.join(`-`)}T${arr[1]}:00`) || null;
+        // const arr = formData.get(`event-${param}-time`).split(` `);
+        // const YMD = arr[0].split(`.`);
+        // [YMD[0], YMD[1], YMD[2]] = [YMD[2], YMD[1], YMD[0]];
+        return Date.parse(formData.get(`event-${param}-time`)) || null;
       };
 
       const entry = {
@@ -128,6 +133,12 @@ class EventController {
         offers: getOffers(),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false
       };
+
+      if (!entry.destination) {
+        // Добавляет красный аутлайн если было введено некорректное значение и не дает сохранить форму
+        destinationInput.style.outlineColor = `red`;
+        return;
+      }
 
       this._onDataChange(entry, this._data);
     });
@@ -142,6 +153,9 @@ class EventController {
   }
 
   _onEscKeyDown(evt) {
+    if (evt.target.classList.contains(`event__input--time`)) {
+      return;
+    }
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._replaceEditWithView();
     }
@@ -149,6 +163,7 @@ class EventController {
 
   _replaceEditWithView() {
     this._container.replaceChild(this._eventView.getElement(), this._eventEdit.getElement());
+    this._eventEdit.destroyCalendar();
     this._eventEdit = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
