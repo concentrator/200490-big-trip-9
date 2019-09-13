@@ -1,3 +1,7 @@
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/airbnb.css';
+
 import AbstractComponent from './abstract-component';
 import {makeFirstLetterUppercase} from '../utils';
 import {unrender} from '../utils';
@@ -16,6 +20,55 @@ class EventEdit extends AbstractComponent {
     this._offerList = offerList;
     this._destinationList = destinationList;
     this._isFavorite = isFavorite;
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    this._initFlatpickr();
+  }
+
+  _initFlatpickr() {
+    const startInput = this.getElement().querySelector(`#event-start-time-1`);
+    const endInput = this.getElement().querySelector(`#event-end-time-1`);
+
+    this._calendarStart = flatpickr(startInput, {
+      "minDate": Date.now(),
+      "altFormat": `d.m.Y H:i`,
+      "enableTime": true,
+      "time_24hr": true,
+      "altInput": true,
+      "onClose": () => {
+        document.activeElement.blur();
+      },
+      // "allowInput": true,
+      "defaultDate": this._dateStart,
+      "onChange": (selectedDates) => {
+        if (Date.parse(selectedDates[0]) > Date.parse(this._calendarEnd.selectedDates[0])) {
+          this._calendarEnd.setDate(selectedDates[0]);
+        }
+        this._calendarEnd.config.minDate = selectedDates[0];
+      },
+    });
+
+    this._calendarEnd = flatpickr(endInput, {
+      "minDate": startInput.value,
+      "altFormat": `d.m.Y H:i`,
+      "enableTime": true,
+      "time_24hr": true,
+      "altInput": true,
+      "onClose": () => {
+        document.activeElement.blur();
+      },
+      // "allowInput": true,
+      "defaultDate": this._dateEnd,
+    });
+  }
+
+  destroyCalendar() {
+    if (this._calendarStart || this._calendarEnd) {
+      this._calendarStart.destroy();
+      this._calendarEnd.destroy();
+    }
   }
 
   _formatDate(date) {

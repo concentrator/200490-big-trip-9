@@ -118,10 +118,10 @@ class EventController {
       };
 
       const getDate = (param) => {
-        const arr = formData.get(`event-${param}-time`).split(` `);
-        const YMD = arr[0].split(`.`);
-        [YMD[0], YMD[1], YMD[2]] = [YMD[2], YMD[1], YMD[0]];
-        return Date.parse(`${YMD.join(`-`)}T${arr[1]}:00`) || null;
+        // const arr = formData.get(`event-${param}-time`).split(` `);
+        // const YMD = arr[0].split(`.`);
+        // [YMD[0], YMD[1], YMD[2]] = [YMD[2], YMD[1], YMD[0]];
+        return Date.parse(formData.get(`event-${param}-time`)) || null;
       };
 
       const entry = {
@@ -153,6 +153,9 @@ class EventController {
   }
 
   _onEscKeyDown(evt) {
+    if (evt.target.classList.contains(`event__input--time`)) {
+      return;
+    }
     if (evt.key === `Escape` || evt.key === `Esc`) {
       this._replaceEditWithView();
     }
@@ -160,6 +163,7 @@ class EventController {
 
   _replaceEditWithView() {
     this._container.replaceChild(this._eventView.getElement(), this._eventEdit.getElement());
+    this._eventEdit.destroyCalendar();
     this._eventEdit = null;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
