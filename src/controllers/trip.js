@@ -33,6 +33,32 @@ class TripController {
     this._eventsSorted = false;
   }
 
+  init() {
+    const tripMain = document.querySelector(`.trip-main`);
+    this._tripInfoContainer = tripMain.querySelector(`.trip-info`);
+
+    if (this._events.length) {
+
+      this._renderTripInfo(this._tripInfoContainer);
+      this._renderSort();
+      this._renderEventList();
+
+      this._container.appendChild(this._tripDayList.getElement());
+
+    } else {
+      const message = new Message(`no-points`);
+      render(this._container, message.getElement(), Position.BEFOREEND);
+    }
+  }
+
+  show() {
+    this._container.classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this._container.classList.add(`visually-hidden`);
+  }
+
   _calculateTrip() {
     this._destinations = this._getDestinations();
     this._startDate = this._getStartDate();
@@ -230,24 +256,6 @@ class TripController {
 
   _onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());
-  }
-
-  init() {
-    const tripMain = document.querySelector(`.trip-main`);
-    this._tripInfoContainer = tripMain.querySelector(`.trip-info`);
-
-    if (this._events.length) {
-
-      this._renderTripInfo(this._tripInfoContainer);
-      this._renderSort();
-      this._renderEventList();
-
-      this._container.appendChild(this._tripDayList.getElement());
-
-    } else {
-      const message = new Message(`no-points`);
-      render(this._container, message.getElement(), Position.BEFOREEND);
-    }
   }
 }
 
