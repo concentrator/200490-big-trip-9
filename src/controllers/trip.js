@@ -1,8 +1,6 @@
-import {render} from '../utils';
-import {unrender} from '../utils';
-import {Position} from '../utils';
+import {render, unrender, Position} from '../utils';
 
-import EventController from './event';
+import EventController, {Mode} from './event';
 
 import EventList from '../components/event-list';
 import TripDay from '../components/trip-day';
@@ -57,6 +55,29 @@ class TripController {
 
   hide() {
     this._container.classList.add(`visually-hidden`);
+  }
+
+  createEvent() {
+    if (this._creatingEvent) {
+      return;
+    }
+
+    this._onChangeView();
+
+    const defaultEvent = {
+      type: ``,
+      destination: {},
+      dateStart: Date.now(),
+      dateEnd: Date.now(),
+      price: 0,
+      offers: [],
+      isFavorite: false
+    };
+
+    this._creatingEvent =
+      new EventController(this._container, defaultEvent, Mode.ADDING, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
+
+    this._subscriptions.unshift(this._creatingEvent.setDefaultView.bind(this._creatingEvent));
   }
 
   _calculateTrip() {
@@ -154,7 +175,7 @@ class TripController {
 
   _renderEvent(container, event) {
     const eventController =
-      new EventController(container, event, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
+      new EventController(container, event, Mode.DEFAULT, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
 
     this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
@@ -222,8 +243,17 @@ class TripController {
   }
 
   _onDataChange(newData, oldData) {
-    this._events[this._events.findIndex((it) => it === oldData)] = newData;
+    const index = this._events.indexOf(oldData);
 
+    if (newData === null) {
+      this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
+    } else if (oldData === null) {
+      this._events = [newData, ...this._events];
+
+    } else {
+      this._events[index] = newData;
+    }
+    console.log(this._events)
     this._renderTrip();
 
     return true;
@@ -256,6 +286,11 @@ class TripController {
 
   _onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());
+
+    if (this._creatingEvent) {
+      this._creatingEvent = null;
+      this._subscriptions.shift();
+    }
   }
 }
 

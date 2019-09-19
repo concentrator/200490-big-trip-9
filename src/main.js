@@ -12,13 +12,15 @@ import data from './data';
 const main = document.querySelector(`.page-main .page-body__container`);
 const board = document.querySelector(`.trip-events`);
 const tripControls = document.querySelector(`.trip-controls`);
+const addEventBtn = document.querySelector(`.trip-main__event-add-btn`);
+
 
 const filter = new Filter(data.FilterItems);
 
 const tripController = new TripController(board, data.events, data.offerList, data.destionationList);
 const statisticsController = new StatisticsController(main);
 
-const menuController = new MenuController(tripControls, data.MenuItems, tripController, statisticsController);
+const menuController = new MenuController(tripControls, data.MenuItems, tripController, statisticsController, addEventBtn);
 
 render(tripControls, filter.getElement(), Position.BEFOREEND);
 

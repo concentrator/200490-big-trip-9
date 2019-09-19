@@ -1,7 +1,8 @@
 export const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTERFIRST: `afterfirst`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  BEFORELAST: `beforelast`
 };
 
 export const createElement = (template) => {
@@ -20,6 +21,9 @@ export const render = (container, element, place) => {
       break;
     case Position.BEFOREEND:
       container.append(element);
+      break;
+    case Position.BEFORELAST:
+      container.insertBefore(element, container.lastElementChild);
       break;
   }
 };
@@ -44,4 +48,13 @@ export const convertDateToTime = (date) => {
 export const formatDateShort = (date) => {
   const dateOptions = {month: `short`, day: `numeric`};
   return new Date(date).toLocaleDateString(`en-US`, dateOptions);
+};
+
+export const isObjectEmpty = (obj) => {
+  for (let prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+  return true;
 };

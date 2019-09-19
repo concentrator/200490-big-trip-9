@@ -7,18 +7,20 @@ const ID = {
 };
 
 class MenuController {
-  constructor(container, items, tripController, statisticsController) {
+  constructor(container, items, tripController, statisticsController, addEventBtn) {
     this._container = container;
     this._items = items;
     this._menu = new Menu(items);
     this._activeItem = null;
     this._trip = tripController;
     this._statistics = statisticsController;
+    this._addEventBtn = addEventBtn;
   }
 
   init() {
 
     render(this._container, this._menu.getElement(), Position.AFTERFIRST);
+
     this._activeItem = this._menu.getElement().querySelector(`.trip-tabs__btn--active`);
 
     this._menu.getElement().addEventListener(`click`, (e) => {
@@ -42,6 +44,11 @@ class MenuController {
           this._statistics.show();
           break;
       }
+    });
+
+    this._addEventBtn.addEventListener(`click`, (e) => {
+      e.preventDefault();
+      this._trip.createEvent();
     });
 
   }

@@ -226,6 +226,8 @@ const getEventListMock = (count) => Array.from(new Array(count), () => getEvent(
 // };
 
 let events = getEventListMock(4);
+
+console.log(events)
 // events = setEventsDuration(events);
 
 const data = {
