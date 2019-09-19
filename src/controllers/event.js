@@ -123,8 +123,8 @@ class EventController {
       return;
     }
     if (this._mode === Mode.ADDING) {
-      this._onDataChange(entry, null);
       this._removeEventAdding();
+      this._onDataChange(entry, null);
     } else {
       this._onDataChange(entry, this._data);
     }

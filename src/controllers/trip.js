@@ -217,6 +217,7 @@ class TripController {
     }
 
     this._tripDayList.getElement().innerHTML = ``;
+    this._subscriptions = [];
 
     switch (e.target.htmlFor.split(`-`)[1]) {
       case `event`:
@@ -249,14 +250,11 @@ class TripController {
       this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
     } else if (oldData === null) {
       this._events = [newData, ...this._events];
-
     } else {
       this._events[index] = newData;
     }
-    console.log(this._events)
     this._renderTrip();
-
-    return true;
+    // return true;
   }
 
   _renderTripInfo(container) {
@@ -277,6 +275,7 @@ class TripController {
     this._tripInfo = new TripInfo(this._info);
     this._renderTripInfo(this._tripInfoContainer);
     this._tripDayList.getElement().innerHTML = ``;
+    this._subscriptions = [];
     if (!this._eventsSorted) {
       this._renderEventList();
     } else {
