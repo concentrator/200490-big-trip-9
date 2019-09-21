@@ -17,7 +17,11 @@ const addEventBtn = document.querySelector(`.trip-main__event-add-btn`);
 
 const filter = new Filter(data.FilterItems);
 
-const tripController = new TripController(board, data.events, data.offerList, data.destionationList);
+const tripController = new TripController(board);
+
+tripController.setOffers(data.offerList);
+tripController.setDestinations(data.destionationList);
+
 const statisticsController = new StatisticsController(main);
 
 const menuController = new MenuController(tripControls, data.MenuItems, tripController, statisticsController, addEventBtn);
@@ -25,5 +29,5 @@ const menuController = new MenuController(tripControls, data.MenuItems, tripCont
 render(tripControls, filter.getElement(), Position.BEFOREEND);
 
 menuController.init();
-tripController.init();
+tripController.show(data.events);
 statisticsController.init();

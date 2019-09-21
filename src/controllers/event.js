@@ -17,8 +17,8 @@ class EventController {
     this._destinationList = destinationList;
     this._data.offerList = data.type ? this._getOffersByType(data.type) : [];
     this._data.destinationList = this._destinationList;
-    this._data.duration = this._getDuration(data);
-    this._eventView = new EventView(data);
+    // this._data.duration = this._getDuration(data);
+    this._eventView = new EventView(this._data);
     this._eventEdit = null;
     this._currentView = this._eventView;
     this._onDataChange = onDataChange;
@@ -188,9 +188,9 @@ class EventController {
     return this._offerList.filter((offer) => offer.type === type)[0].offers;
   }
 
-  _getDuration(event) {
-    return (event.dateEnd - event.dateStart > 0) ? event.dateEnd - event.dateStart : 0;
-  }
+  // _getDuration(event) {
+  //   return (event.dateEnd - event.dateStart > 0) ? event.dateEnd - event.dateStart : 0;
+  // }
 
   _onEscKeyDown(evt) {
     if (evt.target.classList.contains(`event__input--time`)) {

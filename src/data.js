@@ -68,7 +68,8 @@ const getPictureURL = () => {
 
 const getPictures = (destination) => Array.from(new Array(5), ((val, i) => (
   {
-    src: getPictureURL(),
+    // src: getPictureURL(),
+    src: ``,
     description: `${destination} photo ${i + 1}`
   })
 ));
@@ -226,7 +227,6 @@ const getEventListMock = (count) => Array.from(new Array(count), () => getEvent(
 // };
 
 let events = getEventListMock(4);
-
 // events = setEventsDuration(events);
 
 const data = {

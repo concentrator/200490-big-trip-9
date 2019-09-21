@@ -31,6 +31,14 @@ class Sort extends AbstractComponent {
     this._items = SORT_ITEMS;
   }
 
+  hideDay() {
+    this.getElement().querySelector(`.trip-sort__item--day`).textContent = ``;
+  }
+
+  showDay() {
+    this.getElement().querySelector(`.trip-sort__item--day`).textContent = `Day`;
+  }
+
   getTemplate() {
     return `
     <form class="trip-events__trip-sort trip-sort" action="#" method="get">
@@ -52,7 +60,6 @@ class Sort extends AbstractComponent {
           </label>
         </div>`;
       }).join(``)}
-
     </form>`;
   }
 }

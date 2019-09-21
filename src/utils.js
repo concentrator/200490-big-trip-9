@@ -2,8 +2,10 @@ export const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTERFIRST: `afterfirst`,
   BEFOREEND: `beforeend`,
-  BEFORELAST: `beforelast`
+  BEFORELAST: `beforelast`,
 };
+
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
