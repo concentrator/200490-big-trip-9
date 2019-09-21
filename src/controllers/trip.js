@@ -4,7 +4,9 @@ import {render, unrender, Position} from '../utils';
 
 import TripInfo from '../components/trip-info';
 import Sort from '../components/sort';
-import Message from '../components/message';
+import Message, {MessageType} from '../components/message';
+
+// import {Mode} from './event';
 import DayListController from './day-list';
 
 export const SortMode = {
@@ -19,22 +21,41 @@ class TripController {
     this._events = [];
     this._offerList = [];
     this._destinationList = [];
+    // this._mode = Mode.DEFAULT;
+    this._isCreatingEvent = false;
     this._sortMode = SortMode.DEFAULT;
-
     this._tripInfo = new TripInfo({});
     this._sort = new Sort();
-
     this._onDataChange = this._onDataChange.bind(this);
-
-    this._dayListController = new DayListController(this._container, this._onDataChange);
-
+    this._onModeChange = this._onModeChange.bind(this);
+    this._dayListController = new DayListController(this._container, this._onDataChange, this._onModeChange);
     this._init();
   }
 
   _init() {
-    const tripMain = document.querySelector(`.trip-main`);
-    this._tripInfoContainer = tripMain.querySelector(`.trip-info`);
+    const mainHeader = document.querySelector(`.trip-main`);
+    this._tripInfoContainer = mainHeader.querySelector(`.trip-info`);
     this._renderSort();
+    render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
+  }
+
+  get isCreatingEvent() {
+    return this._isCreatingEvent;
+  }
+
+  _onModeChange() {
+    if (this._dayListController.isCreatingEvent) {
+      if (this._isNoEvents()) {
+        this._removeMessage();
+      }
+      this._isCreatingEvent = true;
+    } else {
+      if (this._isNoEvents()) {
+        this._showMessage(MessageType.NO_EVENTS);
+      }
+      this._isCreatingEvent = false;
+    }
+    this._onButtonModeChange();
   }
 
   setOffers(offerList) {
@@ -47,7 +68,7 @@ class TripController {
     this._dayListController.setDestinations(destinationList);
   }
 
-  show(events) {
+  show(events = this._events) {
     if (events !== this._events) {
       this._setEvents(events);
     }
@@ -58,8 +79,16 @@ class TripController {
     this._container.classList.add(`visually-hidden`);
   }
 
-  createEvent() {
+  createEvent(onButtonModeChange) {
     this._dayListController.createEvent();
+    if (!this._onButtonModeChange) {
+      this._onButtonModeChange = onButtonModeChange;
+    }
+    this._onModeChange();
+  }
+
+  cancelCreateEvent() {
+    this._dayListController.cancelCreateEvent();
   }
 
   _setEvents(events) {
@@ -70,14 +99,19 @@ class TripController {
     this._renderTrip();
   }
 
+  _isNoEvents() {
+    if (this._eventsProcessed.length === 0) {
+      return true;
+    }
+    return false;
+  }
+
   _calculateTrip() {
     this._setEventsDuration();
     this._destinations = this._getDestinations();
     this._startDate = this._getStartDate();
     this._endDate = this._getEndDate();
     this._dayListController.setDates(this._startDate, this._endDate);
-    // this._daysList = this._getDaysList();
-    // this._eventsByDays = this._splitEventsByDays();
     this._totalCost = this._getTotalCost();
     this._info = this._getInfo();
   }
@@ -91,10 +125,6 @@ class TripController {
       event.duration = (event.dateEnd - event.dateStart > 0) ? event.dateEnd - event.dateStart : 0;
     });
   }
-
-  // _getEventDuration(event) {
-  //   return (event.dateEnd - event.dateStart > 0) ? event.dateEnd - event.dateStart : 0;
-  // }
 
   _getStartDate() {
     const dates = this._events.map((event) => new Date(event.dateStart).setHours(0, 0, 0, 0));
@@ -181,33 +211,40 @@ class TripController {
     this._dayListController.setEvents(this._eventsProcessed, mode);
   }
 
-  _onDataChange(events) {
-    this._setEvents(events);
-    // return true;
-  }
-
   _renderTripInfo(container) {
     render(container, this._tripInfo.getElement(), Position.AFTERBEGIN);
     this._tripInfoContainer.querySelector(`.trip-info__cost-value`).textContent = this._info.cost;
   }
 
   _renderSort() {
-    render(this._container, this._sort.getElement(), Position.BEFOREEND);
+    render(this._container, this._sort.getElement(), Position.AFTERBEGIN);
     this._sort.getElement()
       .addEventListener(`change`, (e) => this._onSortInputChange(e));
   }
 
+  _showMessage(type) {
+    this._message = new Message(type);
+    render(this._container, this._message.getElement(), Position.BEFOREEND);
+  }
+
+  _removeMessage() {
+    if (this._message) {
+      unrender(this._message.getElement());
+      this._message.removeElement();
+      this._message = null;
+    }
+  }
+
+  _onDataChange(events) {
+    this._setEvents(events);
+    // return true;
+  }
+
   _renderTrip() {
 
-    if (this._eventsProcessed.length) {
+    if (!this._isNoEvents()) {
 
-      if (this._message) {
-        unrender(this._message.getElement());
-        this._message.removeElement();
-        this._message = null;
-      }
-
-      // this._calculateTrip();
+      this._removeMessage();
 
       if (this._tripInfo) {
         unrender(this._tripInfo.getElement());
@@ -216,39 +253,21 @@ class TripController {
       this._tripInfo = new TripInfo(this._info);
       this._renderTripInfo(this._tripInfoContainer);
 
-      // console.log(this._tripDayList)
-      // if (this._tripDayList) {
-
-      // }
-
-      this._dayListController.setEvents(this._eventsProcessed, this._sortMode);
-      // if (this._sortMode === SortMode.DEFAULT) {
-      //   this._renderEventList();
-      // } else {
-      //   this._renderEventListSorted();
-      // }
+      if (!this._container.contains(this._sort.getElement())) {
+        render(this._container, this._sort.getElement(), Position.AFTERBEGIN);
+      }
 
       if (!this._container.contains(this._dayListController.getDayListElement())) {
-        this._container.appendChild(this._dayListController.getDayListElement());
+        render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
       }
 
     } else {
-      this._message = new Message(`no-points`);
-      render(this._container, this._message.getElement(), Position.BEFOREEND);
+      unrender(this._sort.getElement());
+      unrender(this._dayListController.getDayListElement());
+      this._showMessage(MessageType.NO_EVENTS);
     }
 
-    // this._calculateTrip();
-    // unrender(this._tripInfo.getElement());
-    // this._tripInfo.removeElement();
-    // this._tripInfo = new TripInfo(this._info);
-    // this._renderTripInfo(this._tripInfoContainer);
-    // this._tripDayList.getElement().innerHTML = ``;
-    // this._subscriptions = [];
-    // if (!this._eventsSorted) {
-    //   this._renderEventList();
-    // } else {
-    //   this._renderEventListSorted();
-    // }
+    this._dayListController.setEvents(this._eventsProcessed, this._sortMode);
   }
 }
 

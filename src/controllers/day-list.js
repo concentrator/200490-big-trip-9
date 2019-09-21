@@ -8,10 +8,10 @@ import EventList from '../components/event-list';
 import TripDay from '../components/trip-day';
 
 class DayListController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onModeChange) {
     this._container = container;
     this._onDataChangeMain = onDataChange;
-
+    this._onModeChange = onModeChange;
     this._creatingEvent = null;
     this._subscriptions = [];
     this._events = [];
@@ -53,6 +53,13 @@ class DayListController {
     }
   }
 
+  get isCreatingEvent() {
+    if (this._creatingEvent) {
+      return true;
+    }
+    return false;
+  }
+
   createEvent() {
     if (this._creatingEvent) {
       return;
@@ -74,6 +81,10 @@ class DayListController {
       new EventController(this._container, defaultEvent, Mode.ADDING, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
 
     this._subscriptions.unshift(this._creatingEvent.setDefaultView.bind(this._creatingEvent));
+  }
+
+  cancelCreateEvent() {
+    this._onChangeView();
   }
 
   _getDaysList() {
@@ -173,9 +184,9 @@ class DayListController {
     if (this._creatingEvent) {
       this._creatingEvent = null;
       this._subscriptions.shift();
+      this._onModeChange();
     }
   }
-
 }
 
 
