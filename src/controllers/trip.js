@@ -6,7 +6,6 @@ import TripInfo from '../components/trip-info';
 import Sort from '../components/sort';
 import Message, {MessageType} from '../components/message';
 
-// import {Mode} from './event';
 import DayListController from './day-list';
 
 export const SortMode = {
@@ -21,7 +20,6 @@ class TripController {
     this._events = [];
     this._offerList = [];
     this._destinationList = [];
-    // this._mode = Mode.DEFAULT;
     this._isCreatingEvent = false;
     this._sortMode = SortMode.DEFAULT;
     this._tripInfo = new TripInfo({});
@@ -185,14 +183,14 @@ class TripController {
 
   _onSortInputChange(e) {
 
-    const mode = e.target.id.split(`-`)[1];
+    const sortMode = e.target.id.split(`-`)[1];
 
-    if (e.target.nodeName !== `INPUT` || mode === this._sortMode) {
+    if (e.target.nodeName !== `INPUT` || sortMode === this._sortMode) {
       return;
     }
 
-    this._sortMode = mode;
-    switch (mode) {
+    this._sortMode = sortMode;
+    switch (sortMode) {
       case SortMode.DEFAULT:
         this._sort.showDay();
         this._sortEventsByDefault();
@@ -208,7 +206,7 @@ class TripController {
         this._sortEventsByPrice();
         break;
     }
-    this._dayListController.setEvents(this._eventsProcessed, mode);
+    this._dayListController.setEvents(this._eventsProcessed, sortMode);
   }
 
   _renderTripInfo(container) {
