@@ -1,32 +1,32 @@
-import {render} from './utils';
-import {Position} from './utils';
+import {render, Position} from './utils';
 
-import Menu from './components/menu';
 import Filter from './components/filter';
+
+import MenuController from './controllers/menu';
 import TripController from './controllers/trip';
+import StatisticsController from './controllers/statistics';
 
 import data from './data';
 
 
-const renderMenu = (menuItems, container) => {
-  const menu = new Menu(menuItems);
-  render(container, menu.getElement(), Position.AFTERFIRST);
-};
-
-const renderFilter = (filterItems, container) => {
-  const filter = new Filter(filterItems);
-  render(container, filter.getElement(), Position.BEFOREEND);
-};
-
-
+const main = document.querySelector(`.page-main .page-body__container`);
+const board = document.querySelector(`.trip-events`);
 const tripControls = document.querySelector(`.trip-controls`);
 
-renderMenu(data.MenuItems, tripControls);
-renderFilter(data.FilterItems, tripControls);
 
+const filter = new Filter(data.FilterItems);
 
-const board = document.querySelector(`.trip-events`);
+const tripController = new TripController(board);
 
-const trip = new TripController(board, data.events, data.offerList, data.destionationList);
+tripController.setOffers(data.offerList);
+tripController.setDestinations(data.destionationList);
 
-trip.init();
+const statisticsController = new StatisticsController(main);
+
+const menuController = new MenuController(tripControls, data.MenuItems, tripController, statisticsController);
+
+render(tripControls, filter.getElement(), Position.BEFOREEND);
+
+menuController.init();
+tripController.show(data.events);
+statisticsController.init();

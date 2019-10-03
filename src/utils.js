@@ -1,8 +1,11 @@
 export const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTERFIRST: `afterfirst`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  BEFORELAST: `beforelast`,
 };
+
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
@@ -20,6 +23,9 @@ export const render = (container, element, place) => {
       break;
     case Position.BEFOREEND:
       container.append(element);
+      break;
+    case Position.BEFORELAST:
+      container.insertBefore(element, container.lastElementChild);
       break;
   }
 };
@@ -44,4 +50,13 @@ export const convertDateToTime = (date) => {
 export const formatDateShort = (date) => {
   const dateOptions = {month: `short`, day: `numeric`};
   return new Date(date).toLocaleDateString(`en-US`, dateOptions);
+};
+
+export const isObjectEmpty = (obj) => {
+  for (let prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+  return true;
 };

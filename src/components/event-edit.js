@@ -3,14 +3,14 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/airbnb.css';
 
 import AbstractComponent from './abstract-component';
-import {makeFirstLetterUppercase} from '../utils';
-import {unrender} from '../utils';
+import {unrender, makeFirstLetterUppercase, isObjectEmpty} from '../utils';
+import {Mode} from '../controllers/event';
 import data from '../data';
 
-
 class EventEdit extends AbstractComponent {
-  constructor({offerList, destinationList, destination, type, dateStart, dateEnd, price, offers, isFavorite}) {
+  constructor({offerList, destinationList, destination, type, dateStart, dateEnd, price, offers, isFavorite}, mode) {
     super();
+    this._mode = mode;
     this._type = type;
     this._destination = destination;
     this._dateStart = dateStart;
@@ -23,6 +23,24 @@ class EventEdit extends AbstractComponent {
     this._subscribeOnEvents();
   }
 
+  setTypeIconSrc(type) {
+    const img = this.getElement().querySelector(`.event__type-icon`);
+    img.src = `img/icons/${type}.png`;
+    img.classList.remove(`visually-hidden`);
+  }
+
+  setPlaceholder(type) {
+    const placeholder = this.getElement().querySelector(`.event__type-output`);
+    placeholder.textContent = `${makeFirstLetterUppercase(type)} ${this._getPreposition(type)}`;
+  }
+
+  setDestinationInputInvalid() {
+    const input = this.getElement().querySelector(`.event__input--destination`);
+    input.style.borderWidth = `2px`;
+    input.style.borderColor = `red`;
+    input.style.borderStyle = `solid`;
+  }
+
   _subscribeOnEvents() {
     this._initFlatpickr();
   }
@@ -30,9 +48,11 @@ class EventEdit extends AbstractComponent {
   _initFlatpickr() {
     const startInput = this.getElement().querySelector(`#event-start-time-1`);
     const endInput = this.getElement().querySelector(`#event-end-time-1`);
+    const minDate =
+      this._mode === Mode.ADDING || this._dateStart < Date.now() ? this._dateStart : Date.now();
 
     this._calendarStart = flatpickr(startInput, {
-      "minDate": Date.now(),
+      "minDate": minDate,
       "altFormat": `d.m.Y H:i`,
       "enableTime": true,
       "time_24hr": true,
@@ -110,6 +130,9 @@ class EventEdit extends AbstractComponent {
   }
 
   _getDestinationTemplate(destination) {
+    if (isObjectEmpty(destination)) {
+      return ``;
+    }
     return `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -130,25 +153,35 @@ class EventEdit extends AbstractComponent {
     if (!offerList.length) {
       return;
     }
-    this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`afterbegin`, this._getOffersTemplate(offerList, offers));
+    if (!this._details) {
+      this._details = this.getElement().querySelector(`.event__details`);
+      this._details.classList.remove(`visually-hidden`);
+    }
+    this._details.insertAdjacentHTML(`afterbegin`, this._getOffersTemplate(offerList, offers));
+
   }
 
   renderDestination(destination) {
     if (this.getElement().querySelector(`.event__section--destination`)) {
       unrender(this.getElement().querySelector(`.event__section--destination`));
     }
-    this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, this._getDestinationTemplate(destination));
+    if (!this._details) {
+      this._details = this.getElement().querySelector(`.event__details`);
+      this._details.classList.remove(`visually-hidden`);
+    }
+    this._details.insertAdjacentHTML(`beforeend`, this._getDestinationTemplate(destination));
   }
 
   getTemplate() {
     return `
-    <li class="trip-events__item">
-      <form class="event  event--edit" action="#" method="post">
+    ${this._mode === Mode.DEFAULT ? `<li class="trip-events__item">
+      <form class="event event--edit" action="#" method="post">` : `
+      <form class="trip-events__item event event--edit" action="#" method="post">`}
         <header class="event__header">
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type}.png" alt="Event type icon">
+              <img class="event__type-icon ${!this._type ? `visually-hidden` : ``}" width="17" height="17" ${this._type ? `src="img/icons/${this._type}.png"` : ``} alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -169,7 +202,7 @@ class EventEdit extends AbstractComponent {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${makeFirstLetterUppercase(this._type)} ${this._getPreposition(this._type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name}" list="destination-list-1" autocomplete="off">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination.name ? this._destination.name : ``}" list="destination-list-1" autocomplete="off">
             <datalist id="destination-list-1">
               ${this._destinationList.map((destination) => `
               <option value="${destination.name}"></option>`)}
@@ -197,8 +230,9 @@ class EventEdit extends AbstractComponent {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-
+          <button class="event__reset-btn" type="reset">
+          ${this._mode === Mode.DEFAULT ? `Delete` : `Cancel`}</button>
+          ${this._mode === Mode.DEFAULT ? `
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
@@ -209,17 +243,15 @@ class EventEdit extends AbstractComponent {
 
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
-          </button>
+          </button>` : ``}
         </header>
 
-        <section class="event__details">
+        <section class="event__details ${(!this._offers.length && !this._destination.name ? `visually-hidden` : ``)}">
           ${this._offerList.length ? this._getOffersTemplate(this._offerList, this._offers) : ``}
-
           ${this._getDestinationTemplate(this._destination)}
-
         </section>
       </form>
-    </li>`;
+    ${this._mode === Mode.DEFAULT ? `</li>` : ``}`;
   }
 }
 

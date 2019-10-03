@@ -1,9 +1,12 @@
 import AbstractComponent from './abstract-component';
 
-const MESSAGE = {
-  'no-points': `Click New Event to create your first point`
+export const MessageType = {
+  NO_EVENTS: `no-points`
 };
 
+const MESSAGE = {
+  [MessageType.NO_EVENTS]: `Click New Event to create your first point`
+};
 
 class Message extends AbstractComponent {
   constructor(type) {

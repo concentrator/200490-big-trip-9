@@ -68,7 +68,8 @@ const getPictureURL = () => {
 
 const getPictures = (destination) => Array.from(new Array(5), ((val, i) => (
   {
-    src: getPictureURL(),
+    // src: getPictureURL(),
+    src: ``,
     description: `${destination} photo ${i + 1}`
   })
 ));
