@@ -90,7 +90,7 @@ class Statistics extends AbstractComponent {
         maintainAspectRatio: false,
         scales: {
           xAxes: [{
-            minBarLength: 50,
+            minBarLength: 70,
             ticks: {
               beginAtZero: true,
               display: false
@@ -184,7 +184,7 @@ class Statistics extends AbstractComponent {
         maintainAspectRatio: false,
         scales: {
           xAxes: [{
-            minBarLength: 50,
+            minBarLength: 70,
             ticks: {
               beginAtZero: true,
               display: false
@@ -278,7 +278,7 @@ class Statistics extends AbstractComponent {
         maintainAspectRatio: false,
         scales: {
           xAxes: [{
-            minBarLength: 50,
+            minBarLength: 70,
             ticks: {
               beginAtZero: true,
               display: false

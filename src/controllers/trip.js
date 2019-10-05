@@ -14,6 +14,12 @@ export const SortMode = {
   PRICE: `price`
 };
 
+export const FilterMode = {
+  DEFAULT: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+
 class TripController {
   constructor(container, onDataChange) {
     this._container = container;
@@ -23,12 +29,18 @@ class TripController {
     this._destinationList = [];
     this._isCreatingEvent = false;
     this._sortMode = SortMode.DEFAULT;
+    this._filterMode = FilterMode.DEFAULT;
     this._tripInfo = new TripInfo({});
     this._sort = new Sort();
     this._onDataChange = this._onDataChange.bind(this);
     this._onModeChange = this._onModeChange.bind(this);
     this._dayListController = new DayListController(this._container, this._onDataChange, this._onModeChange);
     this._init();
+  }
+
+  setFilterMode(mode) {
+    this._filterMode = mode;
+    this._setEvents();
   }
 
   _init() {
@@ -40,6 +52,23 @@ class TripController {
 
   get isCreatingEvent() {
     return this._isCreatingEvent;
+  }
+
+  _filterEvents() {
+    if (this._filterMode === FilterMode.DEFAULT) {
+      return;
+    }
+    if (this._filterMode === FilterMode.FUTURE) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart > Date.now();
+      });
+    }
+
+    if (this._filterMode === FilterMode.PAST) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart <= Date.now();
+      });
+    }
   }
 
   _onModeChange() {
@@ -90,12 +119,13 @@ class TripController {
     this._dayListController.cancelCreateEvent();
   }
 
-  _setEvents(events) {
+  _setEvents(events = this._events) {
     this._events = events;
     this._eventsProcessed = cloneDeep(this._events);
     // this._eventsProcessed = this._events.slice().map((event) => cloneDeep(event));
     this._calculateTrip();
     this._sortEvents();
+    this._filterEvents();
     this._renderTrip();
   }
 
@@ -223,10 +253,20 @@ class TripController {
     }
   }
 
-  _onDataChange(events) {
-    this._setEvents(events);
+  _onDataChange(newData, oldData) {
+    const index = this._events.indexOf(oldData);
 
-    this._onDataChangeMain(events);
+    if (newData === null) {
+      this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
+    } else if (oldData === null) {
+      this._events = [newData, ...this._events];
+    } else {
+      this._events[index] = newData;
+    }
+
+    this._setEvents();
+
+    this._onDataChangeMain(this._events);
     // return true;
   }
 
