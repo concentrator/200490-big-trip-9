@@ -5,6 +5,8 @@ export const Position = {
   BEFORELAST: `beforelast`,
 };
 
+const ONE_HOUR_SEC = 60 * 60;
+const ONE_DAY_SEC = 24 * 60 * 60;
 export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 export const createElement = (template) => {
@@ -50,6 +52,30 @@ export const convertDateToTime = (date) => {
 export const formatDateShort = (date) => {
   const dateOptions = {month: `short`, day: `numeric`};
   return new Date(date).toLocaleDateString(`en-US`, dateOptions);
+};
+
+export const getformattedDuration = (eventDuration) => {
+  let delta = parseInt((eventDuration) / 1000, 10);
+
+  let days = Math.floor(delta / ONE_DAY_SEC);
+  let hours = Math.floor((delta - days * ONE_DAY_SEC) / ONE_HOUR_SEC);
+  let minutes = Math.round((delta - days * ONE_DAY_SEC - hours * ONE_HOUR_SEC) / 60);
+
+  days = days < 10 ? `0${days}D` : `${days}D`;
+  hours = `0${hours}H`.slice(-3);
+  minutes = `0${minutes}M`.slice(-3);
+
+  let duration = ``;
+
+  if (delta >= ONE_DAY_SEC) {
+    duration = `${days} ${hours} ${minutes}`;
+  } else if (delta < ONE_DAY_SEC && delta >= ONE_HOUR_SEC) {
+    duration = `${hours} ${minutes}`;
+  } else {
+    duration = `${minutes}`;
+  }
+
+  return duration;
 };
 
 export const isObjectEmpty = (obj) => {

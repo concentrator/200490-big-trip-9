@@ -15,8 +15,9 @@ export const SortMode = {
 };
 
 class TripController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
+    this._onDataChangeMain = onDataChange;
     this._events = [];
     this._offerList = [];
     this._destinationList = [];
@@ -91,7 +92,8 @@ class TripController {
 
   _setEvents(events) {
     this._events = events;
-    this._eventsProcessed = this._events.slice().map((event) => cloneDeep(event));
+    this._eventsProcessed = cloneDeep(this._events);
+    // this._eventsProcessed = this._events.slice().map((event) => cloneDeep(event));
     this._calculateTrip();
     this._sortEvents();
     this._renderTrip();
@@ -170,12 +172,15 @@ class TripController {
   _sortEvents() {
     switch (this._sortMode) {
       case SortMode.DEFAULT:
+        this._sort.showDay();
         this._sortEventsByDefault();
         break;
       case SortMode.TIME:
+        this._sort.hideDay();
         this._sortEventsByDuration();
         break;
       case SortMode.PRICE:
+        this._sort.hideDay();
         this._sortEventsByPrice();
         break;
     }
@@ -190,22 +195,7 @@ class TripController {
     }
 
     this._sortMode = sortMode;
-    switch (sortMode) {
-      case SortMode.DEFAULT:
-        this._sort.showDay();
-        this._sortEventsByDefault();
-        break;
-
-      case SortMode.TIME:
-        this._sort.hideDay();
-        this._sortEventsByDuration();
-        break;
-
-      case SortMode.PRICE:
-        this._sort.hideDay();
-        this._sortEventsByPrice();
-        break;
-    }
+    this._sortEvents();
     this._dayListController.setEvents(this._eventsProcessed, sortMode);
   }
 
@@ -235,6 +225,8 @@ class TripController {
 
   _onDataChange(events) {
     this._setEvents(events);
+
+    this._onDataChangeMain(events);
     // return true;
   }
 

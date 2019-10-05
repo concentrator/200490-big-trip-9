@@ -3,7 +3,7 @@ const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const ONE_HOUR_MIN = 60;
 const ONE_DAY_MIN = 24 * 60;
 
-const EVENT_TYPES = {
+export const EVENT_TYPES = {
   Transfer: [
     `taxi`,
     `bus`,
