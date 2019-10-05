@@ -118,7 +118,7 @@ class EventController {
     };
 
     if (!entry.destination) {
-      // Добавляет красный рамку если было введено некорректное значение и не дает сохранить форму
+      // Добавляет красную рамку если было введено некорректное значение и не дает сохранить форму
       this._eventEdit.setDestinationInputInvalid();
       return;
     }

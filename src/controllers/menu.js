@@ -6,14 +6,25 @@ const ID = {
   STATISTICS: `btn-stats`
 };
 
+const MenuItems = [
+  {
+    title: `Table`,
+    isActive: true
+  },
+  {
+    title: `Stats`
+  }
+];
+
 class MenuController {
-  constructor(container, items, tripController, statisticsController) {
+  constructor(container, tripController, statisticsController, filterController) {
     this._container = container;
-    this._items = items;
-    this._menu = new Menu(items);
+    this._items = MenuItems;
+    this._menu = new Menu(MenuItems);
     this._activeItem = null;
     this._trip = tripController;
     this._statistics = statisticsController;
+    this._filter = filterController;
   }
 
   init() {
@@ -24,7 +35,8 @@ class MenuController {
 
     this._menu.getElement().addEventListener(`click`, (e) => {
       e.preventDefault();
-      if (e.target.tagName !== `A` || e.target === this._active) {
+
+      if (e.target.tagName !== `A` || e.target === this._activeItem) {
         return;
       }
 
@@ -61,11 +73,13 @@ class MenuController {
 
   _showTripScreen() {
     this._trip.show();
+    this._filter.show();
     this._statistics.hide();
   }
 
   _showStatisticsScreen() {
     this._trip.hide();
+    this._filter.hide();
     this._statistics.show();
   }
 

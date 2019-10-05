@@ -1,9 +1,6 @@
 import AbstractComponent from './abstract-component';
-import {convertDateToTime} from '../utils';
+import {convertDateToTime, getformattedDuration} from '../utils';
 import {makeFirstLetterUppercase} from '../utils';
-
-const ONE_HOUR_SEC = 60 * 60;
-const ONE_DAY_SEC = 24 * 60 * 60;
 
 
 class EventView extends AbstractComponent {
@@ -27,30 +24,6 @@ class EventView extends AbstractComponent {
     return `${makeFirstLetterUppercase(this._type)} ${this._getPreposition()} ${this._destination}`;
   }
 
-  _getformattedDuration() {
-    let delta = parseInt((this._duration) / 1000, 10);
-
-    let days = Math.floor(delta / ONE_DAY_SEC);
-    let hours = Math.floor((delta - days * ONE_DAY_SEC) / ONE_HOUR_SEC);
-    let minutes = Math.round((delta - days * ONE_DAY_SEC - hours * ONE_HOUR_SEC) / 60);
-
-    days = days < 10 ? `0${days}D` : `${days}D`;
-    hours = `0${hours}H`.slice(-3);
-    minutes = `0${minutes}M`.slice(-3);
-
-    let duration = ``;
-
-    if (delta >= ONE_DAY_SEC) {
-      duration = `${days} ${hours} ${minutes}`;
-    } else if (delta < ONE_DAY_SEC && delta >= ONE_HOUR_SEC) {
-      duration = `${hours} ${minutes}`;
-    } else {
-      duration = `${minutes}`;
-    }
-
-    return duration;
-  }
-
   getTemplate() {
     return `
     <li class="trip-events__item">
@@ -66,7 +39,7 @@ class EventView extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${new Date(this._dateEnd).toISOString()}">${convertDateToTime(this._dateEnd)}</time>
           </p>
-          <p class="event__duration">${this._getformattedDuration()}</p>
+          <p class="event__duration">${getformattedDuration(this._duration)}</p>
         </div>
 
         <p class="event__price">

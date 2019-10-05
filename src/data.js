@@ -1,9 +1,11 @@
+import {ONE_DAY_MS} from "./utils";
+
 const ONE_MINUTE_MS = 60 * 1000;
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const ONE_HOUR_MIN = 60;
 const ONE_DAY_MIN = 24 * 60;
 
-const EVENT_TYPES = {
+export const EVENT_TYPES = {
   Transfer: [
     `taxi`,
     `bus`,
@@ -163,29 +165,6 @@ const OFFERS = [
   }
 ];
 
-const MenuItems = [
-  {
-    title: `Table`,
-    isActive: true
-  },
-  {
-    title: `Stats`
-  }
-];
-
-const FilterItems = [
-  {
-    id: `everything`,
-    isChecked: true
-  },
-  {
-    id: `future`
-  },
-  {
-    id: `past`
-  }
-];
-
 const getOffers = (type) => {
   let offers = [];
   for (let offer of OFFERS) {
@@ -199,7 +178,7 @@ const getOffers = (type) => {
 };
 
 const getEvent = () => {
-  const dateStart = Math.round((Date.now() + Math.floor(Math.random() * 7 * ONE_DAY_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
+  const dateStart = Math.round((Date.now() - ONE_DAY_MS + Math.floor(Math.random() * 7 * ONE_DAY_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
 
   const dateEnd = Math.round((dateStart + 10 * ONE_MINUTE_MS + Math.floor(Math.random() * 36 * ONE_HOUR_MIN) * ONE_MINUTE_MS) / FIVE_MINUTES_MS) * FIVE_MINUTES_MS;
 
@@ -231,8 +210,6 @@ let events = getEventListMock(4);
 
 const data = {
   EVENT_TYPES,
-  MenuItems,
-  FilterItems,
   events,
   offerList: OFFERS,
   destionationList: Destionation
