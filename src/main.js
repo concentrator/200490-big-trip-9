@@ -22,6 +22,15 @@ const onDataChange = (action, event) => {
       }));
 
       break;
+
+    case `delete`:
+      api.deleteEvent({
+        id: event.id,
+      }).then(() => api.getEvents().then((events) => {
+        tripController.show(events);
+      }));
+
+      break;
   }
 };
 
@@ -33,7 +42,7 @@ const main = document.querySelector(`.page-main .page-body__container`);
 const board = document.querySelector(`.trip-events`);
 const controlsContainer = document.querySelector(`.trip-controls`);
 
-const tripController = new TripController(board, onDataChange);
+const tripController = new TripController(board, api, onDataChange);
 
 const statisticsController = new StatisticsController(main);
 const filterController = new FilterController(controlsContainer, onFilterModeChange);

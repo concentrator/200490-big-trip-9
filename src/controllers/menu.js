@@ -1,5 +1,6 @@
 import {render, Position} from '../utils';
 import Menu from '../components/menu';
+// import API from '../api';
 
 const ID = {
   EVENTS: `btn-table`,
@@ -63,6 +64,7 @@ class MenuController {
         this._showTripScreen();
         this._toggleActiveItem(this._menu.getElement().querySelector(`#${ID.EVENTS}`));
       }
+
       this._trip.createEvent(this._onModeChange.bind(this));
     });
   }

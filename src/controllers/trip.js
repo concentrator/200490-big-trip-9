@@ -21,8 +21,9 @@ export const FilterMode = {
 };
 
 class TripController {
-  constructor(container, onDataChange) {
+  constructor(container, api, onDataChange) {
     this._container = container;
+    this._api = api;
     this._onDataChangeMain = onDataChange;
     this._events = [];
     this._offerList = [];
@@ -34,7 +35,7 @@ class TripController {
     this._sort = new Sort();
     this._onDataChange = this._onDataChange.bind(this);
     this._onModeChange = this._onModeChange.bind(this);
-    this._dayListController = new DayListController(this._container, this._onDataChange, this._onModeChange);
+    this._dayListController = new DayListController(this._container, this._api, this._onDataChange, this._onModeChange);
     this._init();
   }
 
@@ -112,7 +113,6 @@ class TripController {
     if (!this._onButtonModeChange) {
       this._onButtonModeChange = onButtonModeChange;
     }
-    this._onModeChange();
   }
 
   cancelCreateEvent() {

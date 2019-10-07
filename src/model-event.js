@@ -34,7 +34,7 @@ class ModelEvent {
   // }
 
   static toRAW(data) {
-    return {
+    const event = {
       'id': data.id,
       'type': data.type,
       'base_price': data.price,
@@ -44,6 +44,10 @@ class ModelEvent {
       'destination': data.destination,
       'offers': data.offers,
     };
+    if (!data.hasOwnProperty(`id`)) {
+      delete event.id;
+    }
+    return event;
   }
 }
 
