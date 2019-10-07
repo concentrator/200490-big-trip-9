@@ -122,17 +122,18 @@ class EventController {
       return;
     }
 
-    if (this._mode === Mode.ADDING) {
-      this._removeEventAdding();
-    }
-    entry.id = this._data.id;
-
     this._block(`save`);
+
+    entry.id = this._data.id;
 
     this._onDataChange(`update`, entry, (state) => {
       if (state === `error`) {
         this._unblock(`save`);
         this._setErrorState(this._eventEdit.getElement());
+      } else {
+        if (this._mode === Mode.ADDING) {
+          this._removeEventAdding();
+        }
       }
     });
   }
@@ -233,12 +234,15 @@ class EventController {
         this._clearErrorState(this._eventEdit.getElement());
         this._block(`delete`);
 
-        if (this._mode === Mode.ADDING) {
-          this._removeEventAdding();
-        }
-        this._onDataChange(`delete`, this._data, () => {
-          this._unblock(`delete`);
-          this._setErrorState(this._eventEdit.getElement());
+        this._onDataChange(`delete`, this._data, (state) => {
+          if (state === `error`) {
+            this._unblock(`delete`);
+            this._setErrorState(this._eventEdit.getElement());
+          } else {
+            if (this._mode === Mode.ADDING) {
+              this._removeEventAdding();
+            }
+          }
         });
       });
   }

@@ -77,10 +77,12 @@ class EventEdit extends AbstractComponent {
 
   _subscribeOnEvents() {
     this._initFlatpickr();
-    this.getElement().querySelector(`.event__favorite-checkbox`)
+    if (this._mode !== Mode.ADDING) {
+      this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`change`, (e) => {
         this._onFavoriteChange(e);
       });
+    }
   }
 
   _initFlatpickr() {

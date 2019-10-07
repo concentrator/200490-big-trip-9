@@ -38,8 +38,7 @@ const onDataChange = (action, event, cb, favorite) => {
       }).then(() => api.getEvents().then((events) => {
         tripController.show(events);
         statisticsController.setEvents(events);
-
-      })).catch(() => cb());
+      })).then(() => cb(`success`)).catch(() => cb(`error`));
       break;
   }
 };
