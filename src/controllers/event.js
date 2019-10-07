@@ -17,24 +17,22 @@ class EventController {
     this._destinationList = destinationList;
     this._data.offerList = data.type ? this._getOffersByType(data.type) : [];
     this._data.destinationList = this._destinationList;
-    // this._data.duration = this._getDuration(data);
     this._eventView = new EventView(this._data);
     this._eventEdit = null;
     this._currentView = this._eventView;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._onFavoriteChange = this._onFavoriteChange.bind(this);
     this.init();
   }
 
-
   init() {
-
     let renderPosition = Position.BEFOREEND;
 
     if (this._mode === Mode.ADDING) {
       renderPosition = Position.BEFORELAST;
-      this._currentView = new EventEdit(this._data, this._mode);
+      this._currentView = new EventEdit(this._data, this._mode, this._onFavoriteChange);
       this._eventEdit = this._currentView;
       this._subscribeOnEvents();
       document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -47,7 +45,7 @@ class EventController {
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, (e) => {
         e.preventDefault();
-        this._eventEdit = new EventEdit(this._data, this._mode);
+        this._eventEdit = new EventEdit(this._data, this._mode, this._onFavoriteChange);
         this._subscribeOnEvents();
         this._onChangeView();
         this._replaceViewWithEdit();
@@ -131,10 +129,26 @@ class EventController {
 
     this._block(`save`);
 
-    this._onDataChange(`update`, entry, () => {
-      this._unblock(`save`);
-      this._setErrorState(this._eventEdit.getElement());
+    this._onDataChange(`update`, entry, (state) => {
+      if (state === `error`) {
+        this._unblock(`save`);
+        this._setErrorState(this._eventEdit.getElement());
+      }
     });
+  }
+
+  _onFavoriteChange(e) {
+    this._clearErrorState(this._eventEdit.getElement());
+    this._block(`save`);
+    this._data.isFavorite = e.target.checked ? true : false;
+    this._onDataChange(`update`, this._data, (state) => {
+      if (state === `error`) {
+        this._data.isFavorite = this._data.isFavorite ? false : true;
+        e.target.checked = this._data.isFavorite;
+        this._setErrorState(this._eventEdit.getElement());
+      }
+      this._unblock(`save`);
+    }, `favorite`);
   }
 
   _block(action) {
@@ -232,10 +246,6 @@ class EventController {
   _getOffersByType(type) {
     return this._offerList.filter((offer) => offer.type === type)[0].offers;
   }
-
-  // _getDuration(event) {
-  //   return (event.dateEnd - event.dateStart > 0) ? event.dateEnd - event.dateStart : 0;
-  // }
 
   _onEscKeyDown(evt) {
     if (evt.target.classList.contains(`event__input--time`)) {

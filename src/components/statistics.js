@@ -1,7 +1,7 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-import {getformattedDuration, makeFirstLetterUppercase} from '../utils';
+import {getFormattedDuration, makeFirstLetterUppercase} from '../utils';
 
 import AbstractComponent from './abstract-component';
 
@@ -15,7 +15,7 @@ class Statistics extends AbstractComponent {
     this._timeChart = null;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `
     <section class="statistics">
       <h2 class="visually-hidden">Trip statistics</h2>
@@ -43,7 +43,6 @@ class Statistics extends AbstractComponent {
     const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);
     const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`);
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
-    // moneyCtx.height = 200;
 
     [this._moneyChart, this._transportChart, this._timeChart].forEach((chart) => {
 
@@ -270,7 +269,7 @@ class Statistics extends AbstractComponent {
               if (label) {
                 label += ` at ${tooltipItem.yLabel}: `;
               }
-              label += getformattedDuration(tooltipItem.xLabel);
+              label += getFormattedDuration(tooltipItem.xLabel);
               return label;
             }
           }
@@ -318,7 +317,7 @@ class Statistics extends AbstractComponent {
             align: `left`,
             anchor: `end`,
             formatter: (value) => {
-              return getformattedDuration(value);
+              return getFormattedDuration(value);
             }
           },
         },

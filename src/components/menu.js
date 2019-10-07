@@ -5,10 +5,9 @@ class Menu extends AbstractComponent {
   constructor(items) {
     super();
     this._items = items;
-    this._element = null;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `
     <nav class="trip-controls__trip-tabs trip-tabs">
       ${this._items.map((item) => `

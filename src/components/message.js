@@ -14,7 +14,7 @@ class Message extends AbstractComponent {
     this._type = type;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `<p class="trip-events__msg">${MESSAGE[this._type]}</p>`;
   }
 }

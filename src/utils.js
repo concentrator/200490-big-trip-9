@@ -80,7 +80,7 @@ export const formatDateShort = (date) => {
   return new Date(date).toLocaleDateString(`en-US`, dateOptions);
 };
 
-export const getformattedDuration = (eventDuration) => {
+export const getFormattedDuration = (eventDuration) => {
   let delta = parseInt((eventDuration) / 1000, 10);
 
   let days = Math.floor(delta / ONE_DAY_SEC);

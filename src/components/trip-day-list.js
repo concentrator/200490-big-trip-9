@@ -6,7 +6,7 @@ class TripDayList extends AbstractComponent {
     super();
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `<ul class="trip-days"></ul>`;
   }
 }

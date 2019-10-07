@@ -1,6 +1,5 @@
 import {render, Position} from '../utils';
 import Menu from '../components/menu';
-// import API from '../api';
 
 const ID = {
   EVENTS: `btn-table`,
@@ -16,6 +15,7 @@ const MenuItems = [
     title: `Stats`
   }
 ];
+
 
 class MenuController {
   constructor(container, tripController, statisticsController, filterController) {

@@ -10,16 +10,6 @@ class TripInfo extends AbstractComponent {
     this._dateEnd = dateEnd;
   }
 
-  getTemplate() {
-    return `
-    <div class="trip-info__main">
-      <h1 class="trip-info__title">
-        ${this._getTitle()}
-      </h1>
-      <p class="trip-info__dates">${formatDateShort(this._dateStart)}&nbsp;&mdash;&nbsp;${formatDateShort(this._dateEnd)}</p>
-    </div>`;
-  }
-
   _getTitle() {
     if (!this._destinations.length) {
       return ``;
@@ -31,6 +21,16 @@ class TripInfo extends AbstractComponent {
       return `${this._destinations[0]} &mdash; ${this._destinations[1]} &mdash; ${this._destinations[2]}`;
     }
     return `${this._destinations[0]} &mdash; ... &mdash; ${this._destinations[this._destinations.length - 1]}`;
+  }
+
+  _getTemplate() {
+    return `
+    <div class="trip-info__main">
+      <h1 class="trip-info__title">
+        ${this._getTitle()}
+      </h1>
+      <p class="trip-info__dates">${formatDateShort(this._dateStart)}&nbsp;&mdash;&nbsp;${formatDateShort(this._dateEnd)}</p>
+    </div>`;
   }
 }
 

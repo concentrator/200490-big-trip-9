@@ -5,10 +5,10 @@ import 'flatpickr/dist/themes/airbnb.css';
 import AbstractComponent from './abstract-component';
 import {unrender, makeFirstLetterUppercase, isObjectEmpty} from '../utils';
 import {Mode} from '../controllers/event';
-import data from '../data';
+import {EVENT_TYPES} from '../data';
 
 class EventEdit extends AbstractComponent {
-  constructor({offerList, destinationList, destination, type, dateStart, dateEnd, price, offers, isFavorite}, mode) {
+  constructor({offerList, destinationList, destination, type, dateStart, dateEnd, price, offers, isFavorite}, mode, onFavoriteChange) {
     super();
     this._mode = mode;
     this._type = type;
@@ -20,6 +20,7 @@ class EventEdit extends AbstractComponent {
     this._offerList = offerList;
     this._destinationList = destinationList;
     this._isFavorite = isFavorite;
+    this._onFavoriteChange = onFavoriteChange;
     this._subscribeOnEvents();
   }
 
@@ -41,8 +42,45 @@ class EventEdit extends AbstractComponent {
     input.style.borderStyle = `solid`;
   }
 
+  destroyCalendar() {
+    if (this._calendarStart || this._calendarEnd) {
+      this._calendarStart.destroy();
+      this._calendarEnd.destroy();
+    }
+  }
+
+  renderOffers(offerList, offers = []) {
+    if (this.getElement().querySelector(`.event__section--offers`)) {
+      unrender(this.getElement().querySelector(`.event__section--offers`));
+    }
+    if (!offerList.length) {
+      return;
+    }
+    if (!this._details) {
+      this._details = this.getElement().querySelector(`.event__details`);
+      this._details.classList.remove(`visually-hidden`);
+    }
+    this._details.insertAdjacentHTML(`afterbegin`, this._getOffersTemplate(offerList, offers));
+
+  }
+
+  renderDestination(destination) {
+    if (this.getElement().querySelector(`.event__section--destination`)) {
+      unrender(this.getElement().querySelector(`.event__section--destination`));
+    }
+    if (!this._details) {
+      this._details = this.getElement().querySelector(`.event__details`);
+      this._details.classList.remove(`visually-hidden`);
+    }
+    this._details.insertAdjacentHTML(`beforeend`, this._getDestinationTemplate(destination));
+  }
+
   _subscribeOnEvents() {
     this._initFlatpickr();
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`change`, (e) => {
+        this._onFavoriteChange(e);
+      });
   }
 
   _initFlatpickr() {
@@ -82,13 +120,6 @@ class EventEdit extends AbstractComponent {
       // "allowInput": true,
       "defaultDate": this._dateEnd,
     });
-  }
-
-  destroyCalendar() {
-    if (this._calendarStart || this._calendarEnd) {
-      this._calendarStart.destroy();
-      this._calendarEnd.destroy();
-    }
   }
 
   _formatDate(date) {
@@ -146,33 +177,7 @@ class EventEdit extends AbstractComponent {
     </section>`;
   }
 
-  renderOffers(offerList, offers = []) {
-    if (this.getElement().querySelector(`.event__section--offers`)) {
-      unrender(this.getElement().querySelector(`.event__section--offers`));
-    }
-    if (!offerList.length) {
-      return;
-    }
-    if (!this._details) {
-      this._details = this.getElement().querySelector(`.event__details`);
-      this._details.classList.remove(`visually-hidden`);
-    }
-    this._details.insertAdjacentHTML(`afterbegin`, this._getOffersTemplate(offerList, offers));
-
-  }
-
-  renderDestination(destination) {
-    if (this.getElement().querySelector(`.event__section--destination`)) {
-      unrender(this.getElement().querySelector(`.event__section--destination`));
-    }
-    if (!this._details) {
-      this._details = this.getElement().querySelector(`.event__details`);
-      this._details.classList.remove(`visually-hidden`);
-    }
-    this._details.insertAdjacentHTML(`beforeend`, this._getDestinationTemplate(destination));
-  }
-
-  getTemplate() {
+  _getTemplate() {
     return `
     ${this._mode === Mode.DEFAULT ? `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">` : `
@@ -188,12 +193,12 @@ class EventEdit extends AbstractComponent {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Transfer</legend>
-                ${data.EVENT_TYPES.Transfer.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
+                ${EVENT_TYPES.Transfer.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
               </fieldset>
 
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Activity</legend>
-                ${data.EVENT_TYPES.Activity.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
+                ${EVENT_TYPES.Activity.map((type) => this._getTypeSelectorTemplate(type)).join(``)}
               </fieldset>
             </div>
           </div>

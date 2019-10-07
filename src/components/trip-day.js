@@ -9,12 +9,13 @@ class TripDay extends AbstractComponent {
     this._date = date;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `
     <li class="trip-days__item day">
       <div class="day__info">
         ${this._number ? `<span class="day__counter">${this._number}</span>` : ``}
-        ${this._date ? `<time class="day__date" datetime="${new Date(this._date).toISOString()}">${formatDateShort(this._date)}</time>` : ``}
+        ${this._date ? `<time class="day__date"
+          datetime="${new Date(this._date).toISOString()}">${formatDateShort(this._date)}</time>` : ``}
       </div>
     <li>`;
   }

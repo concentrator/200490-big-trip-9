@@ -39,7 +39,7 @@ class Sort extends AbstractComponent {
     this.getElement().querySelector(`.trip-sort__item--day`).textContent = `Day`;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `
     <form class="trip-events__trip-sort trip-sort" action="#" method="get">
 

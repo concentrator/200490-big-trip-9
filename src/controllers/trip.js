@@ -44,47 +44,8 @@ class TripController {
     this._setEvents();
   }
 
-  _init() {
-    const mainHeader = document.querySelector(`.trip-main`);
-    this._tripInfoContainer = mainHeader.querySelector(`.trip-info`);
-    this._renderSort();
-    render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
-  }
-
   get isCreatingEvent() {
     return this._isCreatingEvent;
-  }
-
-  _filterEvents() {
-    if (this._filterMode === FilterMode.DEFAULT) {
-      return;
-    }
-    if (this._filterMode === FilterMode.FUTURE) {
-      this._eventsProcessed = this._eventsProcessed.filter((event) => {
-        return event.dateStart > Date.now();
-      });
-    }
-
-    if (this._filterMode === FilterMode.PAST) {
-      this._eventsProcessed = this._eventsProcessed.filter((event) => {
-        return event.dateStart <= Date.now();
-      });
-    }
-  }
-
-  _onModeChange() {
-    if (this._dayListController.isCreatingEvent) {
-      if (this._isNoEvents()) {
-        this._removeMessage();
-      }
-      this._isCreatingEvent = true;
-    } else {
-      if (this._isNoEvents()) {
-        this._showMessage(MessageType.NO_EVENTS);
-      }
-      this._isCreatingEvent = false;
-    }
-    this._onButtonModeChange();
   }
 
   setOffers(offerList) {
@@ -119,10 +80,16 @@ class TripController {
     this._dayListController.cancelCreateEvent();
   }
 
+  _init() {
+    const mainHeader = document.querySelector(`.trip-main`);
+    this._tripInfoContainer = mainHeader.querySelector(`.trip-info`);
+    this._renderSort();
+    render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
+  }
+
   _setEvents(events = this._events) {
     this._events = events;
     this._eventsProcessed = cloneDeep(this._events);
-    // this._eventsProcessed = this._events.slice().map((event) => cloneDeep(event));
     this._calculateTrip();
     this._sortEvents();
     this._filterEvents();
@@ -199,6 +166,23 @@ class TripController {
     this._eventsProcessed.sort((a, b) => b.price - a.price);
   }
 
+  _filterEvents() {
+    if (this._filterMode === FilterMode.DEFAULT) {
+      return;
+    }
+    if (this._filterMode === FilterMode.FUTURE) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart > Date.now();
+      });
+    }
+
+    if (this._filterMode === FilterMode.PAST) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart <= Date.now();
+      });
+    }
+  }
+
   _sortEvents() {
     switch (this._sortMode) {
       case SortMode.DEFAULT:
@@ -253,10 +237,6 @@ class TripController {
     }
   }
 
-  _onDataChange(action, data, cb) {
-    this._onDataChangeMain(action, data, cb);
-  }
-
   _renderTrip() {
 
     if (!this._isNoEvents()) {
@@ -285,6 +265,25 @@ class TripController {
     }
 
     this._dayListController.setEvents(this._eventsProcessed, this._sortMode);
+  }
+
+  _onModeChange() {
+    if (this._dayListController.isCreatingEvent) {
+      if (this._isNoEvents()) {
+        this._removeMessage();
+      }
+      this._isCreatingEvent = true;
+    } else {
+      if (this._isNoEvents()) {
+        this._showMessage(MessageType.NO_EVENTS);
+      }
+      this._isCreatingEvent = false;
+    }
+    this._onButtonModeChange();
+  }
+
+  _onDataChange(action, data, cb, favorite) {
+    this._onDataChangeMain(action, data, cb, favorite);
   }
 }
 

@@ -175,8 +175,8 @@ class DayListController {
     this._tripDayList.getElement().appendChild(tripDayElement);
   }
 
-  _onDataChange(action, data, cb) {
-    this._onDataChangeMain(action, data, cb);
+  _onDataChange(action, data, cb, favorite) {
+    this._onDataChangeMain(action, data, cb, favorite);
   }
 
   _onChangeView() {
