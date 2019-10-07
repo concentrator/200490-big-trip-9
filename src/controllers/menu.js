@@ -16,6 +16,7 @@ const MenuItems = [
   }
 ];
 
+
 class MenuController {
   constructor(container, tripController, statisticsController, filterController) {
     this._container = container;
@@ -63,6 +64,7 @@ class MenuController {
         this._showTripScreen();
         this._toggleActiveItem(this._menu.getElement().querySelector(`#${ID.EVENTS}`));
       }
+
       this._trip.createEvent(this._onModeChange.bind(this));
     });
   }

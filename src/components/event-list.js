@@ -5,7 +5,7 @@ class EventList extends AbstractComponent {
     super();
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `<ul class="trip-events__list"></ul>`;
   }
 }

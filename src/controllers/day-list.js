@@ -7,9 +7,12 @@ import TripDayList from '../components/trip-day-list';
 import EventList from '../components/event-list';
 import TripDay from '../components/trip-day';
 
+import ModelEvent from '../model-event';
+
 class DayListController {
-  constructor(container, onDataChange, onModeChange) {
+  constructor(container, api, onDataChange, onModeChange) {
     this._container = container;
+    this._api = api;
     this._onDataChangeMain = onDataChange;
     this._onModeChange = onModeChange;
     this._creatingEvent = null;
@@ -68,8 +71,8 @@ class DayListController {
     this._onChangeView();
 
     const defaultEvent = {
-      type: ``,
-      destination: {},
+      type: `taxi`,
+      destination: this._destinationList[0],
       dateStart: Date.now(),
       dateEnd: Date.now(),
       price: 0,
@@ -77,10 +80,18 @@ class DayListController {
       isFavorite: false
     };
 
-    this._creatingEvent =
-      new EventController(this._container, defaultEvent, Mode.ADDING, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
+    this._api.createEvent({event: ModelEvent.toRAW(defaultEvent)})
+      .then((event) => {
+        defaultEvent.id = event.id;
 
-    this._subscriptions.unshift(this._creatingEvent.setDefaultView.bind(this._creatingEvent));
+        this._creatingEvent =
+        new EventController(this._container, defaultEvent, Mode.ADDING, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
+
+        this._subscriptions.unshift(this._creatingEvent.setDefaultView.bind(this._creatingEvent));
+        this._onModeChange();
+      });
+
+
   }
 
   cancelCreateEvent() {
@@ -164,13 +175,8 @@ class DayListController {
     this._tripDayList.getElement().appendChild(tripDayElement);
   }
 
-
-  // _onDataChange(newData, oldData) {
-  //   this._onDataChangeMain(newData, oldData);
-  // }
-
-  _onDataChange(action, data) {
-    this._onDataChangeMain(action, data);
+  _onDataChange(action, data, cb, favorite) {
+    this._onDataChangeMain(action, data, cb, favorite);
   }
 
   _onChangeView() {

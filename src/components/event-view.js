@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component';
-import {convertDateToTime, getformattedDuration} from '../utils';
+import {convertDateToTime, getFormattedDuration} from '../utils';
 import {makeFirstLetterUppercase} from '../utils';
 
 
@@ -24,7 +24,7 @@ class EventView extends AbstractComponent {
     return `${makeFirstLetterUppercase(this._type)} ${this._getPreposition()} ${this._destination}`;
   }
 
-  getTemplate() {
+  _getTemplate() {
     return `
     <li class="trip-events__item">
       <div class="event">
@@ -39,7 +39,7 @@ class EventView extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${new Date(this._dateEnd).toISOString()}">${convertDateToTime(this._dateEnd)}</time>
           </p>
-          <p class="event__duration">${getformattedDuration(this._duration)}</p>
+          <p class="event__duration">${getFormattedDuration(this._duration)}</p>
         </div>
 
         <p class="event__price">

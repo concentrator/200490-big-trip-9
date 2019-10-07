@@ -21,8 +21,9 @@ export const FilterMode = {
 };
 
 class TripController {
-  constructor(container, onDataChange) {
+  constructor(container, api, onDataChange) {
     this._container = container;
+    this._api = api;
     this._onDataChangeMain = onDataChange;
     this._events = [];
     this._offerList = [];
@@ -34,7 +35,7 @@ class TripController {
     this._sort = new Sort();
     this._onDataChange = this._onDataChange.bind(this);
     this._onModeChange = this._onModeChange.bind(this);
-    this._dayListController = new DayListController(this._container, this._onDataChange, this._onModeChange);
+    this._dayListController = new DayListController(this._container, this._api, this._onDataChange, this._onModeChange);
     this._init();
   }
 
@@ -43,47 +44,8 @@ class TripController {
     this._setEvents();
   }
 
-  _init() {
-    const mainHeader = document.querySelector(`.trip-main`);
-    this._tripInfoContainer = mainHeader.querySelector(`.trip-info`);
-    this._renderSort();
-    render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
-  }
-
   get isCreatingEvent() {
     return this._isCreatingEvent;
-  }
-
-  _filterEvents() {
-    if (this._filterMode === FilterMode.DEFAULT) {
-      return;
-    }
-    if (this._filterMode === FilterMode.FUTURE) {
-      this._eventsProcessed = this._eventsProcessed.filter((event) => {
-        return event.dateStart > Date.now();
-      });
-    }
-
-    if (this._filterMode === FilterMode.PAST) {
-      this._eventsProcessed = this._eventsProcessed.filter((event) => {
-        return event.dateStart <= Date.now();
-      });
-    }
-  }
-
-  _onModeChange() {
-    if (this._dayListController.isCreatingEvent) {
-      if (this._isNoEvents()) {
-        this._removeMessage();
-      }
-      this._isCreatingEvent = true;
-    } else {
-      if (this._isNoEvents()) {
-        this._showMessage(MessageType.NO_EVENTS);
-      }
-      this._isCreatingEvent = false;
-    }
-    this._onButtonModeChange();
   }
 
   setOffers(offerList) {
@@ -112,17 +74,22 @@ class TripController {
     if (!this._onButtonModeChange) {
       this._onButtonModeChange = onButtonModeChange;
     }
-    this._onModeChange();
   }
 
   cancelCreateEvent() {
     this._dayListController.cancelCreateEvent();
   }
 
+  _init() {
+    const mainHeader = document.querySelector(`.trip-main`);
+    this._tripInfoContainer = mainHeader.querySelector(`.trip-info`);
+    this._renderSort();
+    render(this._container, this._dayListController.getDayListElement(), Position.BEFOREEND);
+  }
+
   _setEvents(events = this._events) {
     this._events = events;
     this._eventsProcessed = cloneDeep(this._events);
-    // this._eventsProcessed = this._events.slice().map((event) => cloneDeep(event));
     this._calculateTrip();
     this._sortEvents();
     this._filterEvents();
@@ -199,6 +166,23 @@ class TripController {
     this._eventsProcessed.sort((a, b) => b.price - a.price);
   }
 
+  _filterEvents() {
+    if (this._filterMode === FilterMode.DEFAULT) {
+      return;
+    }
+    if (this._filterMode === FilterMode.FUTURE) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart > Date.now();
+      });
+    }
+
+    if (this._filterMode === FilterMode.PAST) {
+      this._eventsProcessed = this._eventsProcessed.filter((event) => {
+        return event.dateStart <= Date.now();
+      });
+    }
+  }
+
   _sortEvents() {
     switch (this._sortMode) {
       case SortMode.DEFAULT:
@@ -253,40 +237,6 @@ class TripController {
     }
   }
 
-  // _onDataChange(newData, oldData) {
-  //   const index = this._events.indexOf(oldData);
-
-  //   if (newData === null) {
-  //     this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
-  //   } else if (oldData === null) {
-  //     this._events = [newData, ...this._events];
-  //   } else {
-  //     this._events[index] = newData;
-  //   }
-
-  //   this._setEvents();
-
-  //   this._onDataChangeMain(this._events);
-  //   // return true;
-  // }
-
-  _onDataChange(action, data) {
-    // const index = this._events.indexOf(oldData);
-
-    // if (newData === null) {
-    //   this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
-    // } else if (oldData === null) {
-    //   this._events = [newData, ...this._events];
-    // } else {
-    //   this._events[index] = newData;
-    // }
-
-    // this._setEvents();
-
-    this._onDataChangeMain(action, data);
-    // return true;
-  }
-
   _renderTrip() {
 
     if (!this._isNoEvents()) {
@@ -315,6 +265,25 @@ class TripController {
     }
 
     this._dayListController.setEvents(this._eventsProcessed, this._sortMode);
+  }
+
+  _onModeChange() {
+    if (this._dayListController.isCreatingEvent) {
+      if (this._isNoEvents()) {
+        this._removeMessage();
+      }
+      this._isCreatingEvent = true;
+    } else {
+      if (this._isNoEvents()) {
+        this._showMessage(MessageType.NO_EVENTS);
+      }
+      this._isCreatingEvent = false;
+    }
+    this._onButtonModeChange();
+  }
+
+  _onDataChange(action, data, cb, favorite) {
+    this._onDataChangeMain(action, data, cb, favorite);
   }
 }
 

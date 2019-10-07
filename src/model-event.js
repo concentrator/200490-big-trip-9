@@ -19,22 +19,8 @@ class ModelEvent {
     return data.map(ModelEvent.parseEvent);
   }
 
-  // toRAW() {
-  //   return {
-  //     'id': this.id,
-  //     'type': this.type,
-  //     'base_price': this.price,
-  //     'date_from': this.dateStart,
-  //     'date_to': this.dateEnd,
-  //     'is_favorite': this.isFavorite,
-  //     'color': this.color,
-  //     'destination': this.destination,
-  //     'offers': this.offers,
-  //   };
-  // }
-
   static toRAW(data) {
-    return {
+    const event = {
       'id': data.id,
       'type': data.type,
       'base_price': data.price,
@@ -44,6 +30,10 @@ class ModelEvent {
       'destination': data.destination,
       'offers': data.offers,
     };
+    if (!data.hasOwnProperty(`id`)) {
+      delete event.id;
+    }
+    return event;
   }
 }
 
