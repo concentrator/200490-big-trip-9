@@ -2,14 +2,27 @@ import MenuController from './controllers/menu';
 import FilterController from './controllers/filter';
 import TripController from './controllers/trip';
 import StatisticsController from './controllers/statistics';
+import ModelEvent from './model-event';
+import API from './api';
 
-import data from './data';
+const AUTHORIZATION = `Basic eo1359sfiek29889a=${Math.random()}`;
+const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
 
-let eventMocks = data.events;
 
-const onDataChange = (events) => {
-  eventMocks = events;
-  statisticsController.update(events);
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+
+const onDataChange = (action, event) => {
+  switch (action) {
+    case `update`:
+      api.updateEvent({
+        id: event.id,
+        data: ModelEvent.toRAW(event)
+      }).then(() => api.getEvents().then((events) => {
+        tripController.show(events);
+      }));
+
+      break;
+  }
 };
 
 const onFilterModeChange = (mode) => {
@@ -22,10 +35,7 @@ const controlsContainer = document.querySelector(`.trip-controls`);
 
 const tripController = new TripController(board, onDataChange);
 
-tripController.setOffers(data.offerList);
-tripController.setDestinations(data.destionationList);
-
-const statisticsController = new StatisticsController(main, eventMocks);
+const statisticsController = new StatisticsController(main);
 const filterController = new FilterController(controlsContainer, onFilterModeChange);
 
 const menuController = new MenuController(controlsContainer, tripController, statisticsController, filterController);
@@ -33,5 +43,22 @@ const menuController = new MenuController(controlsContainer, tripController, sta
 
 filterController.init();
 menuController.init();
-tripController.show(eventMocks);
-statisticsController.init();
+
+let offerList = null;
+let destionationList = null;
+
+api.getOffers().then((offers) => {
+  offerList = offers;
+  tripController.setOffers(offerList);
+});
+
+api.getDestinations().then((destionations) => {
+  destionationList = destionations;
+  tripController.setDestinations(destionationList);
+});
+
+api.getEvents().then((events) => {
+  tripController.show(events);
+  statisticsController.setEvents(events);
+});
+

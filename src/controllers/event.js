@@ -122,11 +122,15 @@ class EventController {
       this._eventEdit.setDestinationInputInvalid();
       return;
     }
+
     if (this._mode === Mode.ADDING) {
       this._removeEventAdding();
-      this._onDataChange(entry, null);
+      // this._onDataChange(entry, null);
+      this._onDataChange(`create`, entry);
     } else {
-      this._onDataChange(entry, this._data);
+      entry.id = this._data.id;
+      // this._onDataChange(entry, this._data);
+      this._onDataChange(`update`, entry);
     }
   }
 
@@ -176,7 +180,8 @@ class EventController {
       .addEventListener(`click`, (e) => {
         e.preventDefault();
         if (this._mode === Mode.DEFAULT) {
-          this._onDataChange(null, this._data);
+          // this._onDataChange(null, this._data);
+          this._onDataChange(`delete`, this._data);
         }
         if (this._mode === Mode.ADDING) {
           this._removeEventAdding();

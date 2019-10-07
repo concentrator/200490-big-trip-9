@@ -118,9 +118,9 @@ class EventEdit extends AbstractComponent {
       <div class="event__available-offers">
         ${offerList.map((offer, index) => `
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer-${index}" ${offers.some((it) => it === offer) ? `checked` : ``}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer-${index}" ${offers.some((it) => it.title === offer.title) ? `checked` : ``}>
           <label class="event__offer-label" for="event-offer-${index}">
-            <span class="event__offer-title">${offer.name}</span>
+            <span class="event__offer-title">${offer.title}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </label>

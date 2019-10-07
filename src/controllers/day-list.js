@@ -129,6 +129,7 @@ class DayListController {
   }
 
   _renderEvent(container, event) {
+
     const eventController =
       new EventController(container, event, Mode.DEFAULT, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
 
@@ -164,8 +165,12 @@ class DayListController {
   }
 
 
-  _onDataChange(newData, oldData) {
-    this._onDataChangeMain(newData, oldData);
+  // _onDataChange(newData, oldData) {
+  //   this._onDataChangeMain(newData, oldData);
+  // }
+
+  _onDataChange(action, data) {
+    this._onDataChangeMain(action, data);
   }
 
   _onChangeView() {

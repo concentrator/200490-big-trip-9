@@ -50,7 +50,7 @@ class EventView extends AbstractComponent {
         <ul class="event__selected-offers">
           ${this._offers.map((offer) => `
           <li class="event__offer">
-            <span class="event__offer-title">${offer.name}</span>
+            <span class="event__offer-title">${offer.title}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </li>`).join(``)}
