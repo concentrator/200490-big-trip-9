@@ -11,7 +11,8 @@ const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
-const onDataChange = (action, event) => {
+
+const onDataChange = (action, event, cb) => {
   switch (action) {
     case `update`:
       api.updateEvent({
@@ -19,8 +20,8 @@ const onDataChange = (action, event) => {
         data: ModelEvent.toRAW(event)
       }).then(() => api.getEvents().then((events) => {
         tripController.show(events);
-      }));
 
+      })).catch(() => cb());
       break;
 
     case `delete`:
@@ -28,8 +29,7 @@ const onDataChange = (action, event) => {
         id: event.id,
       }).then(() => api.getEvents().then((events) => {
         tripController.show(events);
-      }));
-
+      })).catch(() => cb());
       break;
   }
 };
@@ -53,21 +53,16 @@ const menuController = new MenuController(controlsContainer, tripController, sta
 filterController.init();
 menuController.init();
 
-let offerList = null;
-let destionationList = null;
 
 api.getOffers().then((offers) => {
-  offerList = offers;
-  tripController.setOffers(offerList);
-});
+  tripController.setOffers(offers);
 
-api.getDestinations().then((destionations) => {
-  destionationList = destionations;
-  tripController.setDestinations(destionationList);
-});
+  api.getDestinations().then((destionations) => {
+    tripController.setDestinations(destionations);
 
-api.getEvents().then((events) => {
-  tripController.show(events);
-  statisticsController.setEvents(events);
+    api.getEvents().then((events) => {
+      tripController.show(events);
+      statisticsController.setEvents(events);
+    });
+  });
 });
-

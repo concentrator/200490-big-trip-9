@@ -81,7 +81,9 @@ class DayListController {
     };
 
     this._api.createEvent({event: ModelEvent.toRAW(defaultEvent)})
-      .then(() => {
+      .then((event) => {
+        defaultEvent.id = event.id;
+
         this._creatingEvent =
         new EventController(this._container, defaultEvent, Mode.ADDING, this._offerList, this._destinationList, this._onDataChange, this._onChangeView);
 
@@ -173,13 +175,8 @@ class DayListController {
     this._tripDayList.getElement().appendChild(tripDayElement);
   }
 
-
-  // _onDataChange(newData, oldData) {
-  //   this._onDataChangeMain(newData, oldData);
-  // }
-
-  _onDataChange(action, data) {
-    this._onDataChangeMain(action, data);
+  _onDataChange(action, data, cb) {
+    this._onDataChangeMain(action, data, cb);
   }
 
   _onChangeView() {

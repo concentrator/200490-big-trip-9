@@ -9,6 +9,32 @@ const ONE_HOUR_SEC = 60 * 60;
 const ONE_DAY_SEC = 24 * 60 * 60;
 export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
+const SHAKE_ANIMATION = `
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+.shake {
+  animation: shake 0.6s;
+}`;
+
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -86,3 +112,14 @@ export const isObjectEmpty = (obj) => {
   }
   return true;
 };
+
+const addStyleElement = (css) => {
+  const head = document.head;
+  const style = document.createElement(`style`);
+
+  head.appendChild(style);
+  style.type = `text/css`;
+  style.appendChild(document.createTextNode(css));
+};
+
+addStyleElement(SHAKE_ANIMATION);

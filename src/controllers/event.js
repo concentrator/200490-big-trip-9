@@ -85,6 +85,7 @@ class EventController {
   }
 
   _onFormSubmit(e) {
+    this._clearErrorState(this._eventEdit.getElement());
     const formData = new FormData(e.target);
 
     const getOffers = () => {
@@ -125,13 +126,49 @@ class EventController {
 
     if (this._mode === Mode.ADDING) {
       this._removeEventAdding();
-      // this._onDataChange(entry, null);
-      this._onDataChange(`create`, entry);
-    } else {
-      entry.id = this._data.id;
-      // this._onDataChange(entry, this._data);
-      this._onDataChange(`update`, entry);
     }
+    entry.id = this._data.id;
+
+    this._block(`save`);
+
+    this._onDataChange(`update`, entry, () => {
+      this._unblock(`save`);
+      this._setErrorState(this._eventEdit.getElement());
+    });
+  }
+
+  _block(action) {
+    const saveBtn = this._eventEdit.getElement().querySelector(`.event__save-btn`);
+    const deleteBtn = this._eventEdit.getElement().querySelector(`.event__reset-btn`);
+    saveBtn.disabled = true;
+    deleteBtn.disabled = true;
+    if (action === `save`) {
+      saveBtn.textContent = `Saving...`;
+    } else if (action === `delete`) {
+      deleteBtn.textContent = `Deleting...`;
+    }
+  }
+
+  _unblock(action) {
+    const saveBtn = this._eventEdit.getElement().querySelector(`.event__save-btn`);
+    const deleteBtn = this._eventEdit.getElement().querySelector(`.event__reset-btn`);
+    saveBtn.disabled = false;
+    deleteBtn.disabled = false;
+    if (action === `save`) {
+      saveBtn.textContent = `Save`;
+    } else if (action === `delete`) {
+      deleteBtn.textContent = `Delete`;
+    }
+  }
+
+  _setErrorState(element) {
+    element.classList.add(`shake`);
+    element.style.outline = `2px solid red`;
+  }
+
+  _clearErrorState(element) {
+    element.classList.remove(`shake`);
+    element.removeAttribute(`style`);
   }
 
   _subscribeOnEvents() {
@@ -179,13 +216,16 @@ class EventController {
     this._eventEdit.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, (e) => {
         e.preventDefault();
-        if (this._mode === Mode.DEFAULT) {
-          // this._onDataChange(null, this._data);
-          this._onDataChange(`delete`, this._data);
-        }
+        this._clearErrorState(this._eventEdit.getElement());
+        this._block(`delete`);
+
         if (this._mode === Mode.ADDING) {
           this._removeEventAdding();
         }
+        this._onDataChange(`delete`, this._data, () => {
+          this._unblock(`delete`);
+          this._setErrorState(this._eventEdit.getElement());
+        });
       });
   }
 
