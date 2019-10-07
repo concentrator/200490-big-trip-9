@@ -253,20 +253,37 @@ class TripController {
     }
   }
 
-  _onDataChange(newData, oldData) {
-    const index = this._events.indexOf(oldData);
+  // _onDataChange(newData, oldData) {
+  //   const index = this._events.indexOf(oldData);
 
-    if (newData === null) {
-      this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
-    } else if (oldData === null) {
-      this._events = [newData, ...this._events];
-    } else {
-      this._events[index] = newData;
-    }
+  //   if (newData === null) {
+  //     this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
+  //   } else if (oldData === null) {
+  //     this._events = [newData, ...this._events];
+  //   } else {
+  //     this._events[index] = newData;
+  //   }
 
-    this._setEvents();
+  //   this._setEvents();
 
-    this._onDataChangeMain(this._events);
+  //   this._onDataChangeMain(this._events);
+  //   // return true;
+  // }
+
+  _onDataChange(action, data) {
+    // const index = this._events.indexOf(oldData);
+
+    // if (newData === null) {
+    //   this._events = [...this._events.slice(0, index), ...this._events.slice(index + 1)];
+    // } else if (oldData === null) {
+    //   this._events = [newData, ...this._events];
+    // } else {
+    //   this._events[index] = newData;
+    // }
+
+    // this._setEvents();
+
+    this._onDataChangeMain(action, data);
     // return true;
   }
 

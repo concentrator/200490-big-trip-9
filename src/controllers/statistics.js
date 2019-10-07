@@ -9,6 +9,7 @@ class StatisticsController {
     this._events = events;
     this._stats = {};
     this._statistics = new Statistics();
+    this._init();
   }
 
   show() {
@@ -22,7 +23,11 @@ class StatisticsController {
     this._statistics.getElement().classList.add(`visually-hidden`);
   }
 
-  init() {
+  setEvents(events) {
+    this._events = events;
+  }
+
+  _init() {
     render(this._container, this._statistics.getElement(), Position.BEFOREEND);
     this.hide();
   }

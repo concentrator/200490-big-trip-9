@@ -61,12 +61,12 @@ const DESTINATION = [
   `Balaklava`
 ];
 
-const getPictureURL = () => {
-  const xmlHttp = new XMLHttpRequest();
-  xmlHttp.open(`GET`, `http://picsum.photos/300/150?r=${Math.random()}`, false);
-  xmlHttp.send(null);
-  return xmlHttp.responseURL;
-};
+// const getPictureURL = () => {
+//   const xmlHttp = new XMLHttpRequest();
+//   xmlHttp.open(`GET`, `http://picsum.photos/300/150?r=${Math.random()}`, false);
+//   xmlHttp.send(null);
+//   return xmlHttp.responseURL;
+// };
 
 const getPictures = (destination) => Array.from(new Array(5), ((val, i) => (
   {
@@ -207,6 +207,11 @@ const getEventListMock = (count) => Array.from(new Array(count), () => getEvent(
 
 let events = getEventListMock(4);
 // events = setEventsDuration(events);
+
+// events.forEach((event) => {
+//   console.log(typeof event.dateStart)
+// })
+
 
 const data = {
   EVENT_TYPES,
