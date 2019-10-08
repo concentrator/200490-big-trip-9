@@ -27,10 +27,6 @@ class StatisticsController {
     this._events = events;
   }
 
-  // update(events) {
-  //   this._events = events;
-  // }
-
   _init() {
     render(this._container, this._statistics.getElement(), Position.BEFOREEND);
     this.hide();
